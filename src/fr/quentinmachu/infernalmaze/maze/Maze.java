@@ -85,7 +85,7 @@ public class Maze {
 			else p = C.get(C.size()-1);
 			
 			// If the current point is defined to be a dead-end and already is, remove it from the list and pick another one
-			if(deadEnds.contains(p) && (grid[p.x][p.y] & (grid[p.x][p.y] - 1)) == 0) {
+			if(deadEnds.contains(p) && isDeadEnd(p)) {
 				C.remove(p);
 				continue;
 			}
@@ -110,9 +110,23 @@ public class Maze {
 			if(!unvisitedNeighborFound) C.remove(p);
 		}
 		
-		//TODO Update deadends
+		// Update deadends
+		deadEnds.clear();
+		for(int x=0; x<width; x++) {
+			for(int y=0; y<height; y++) {
+				Point p = new Point(x,y);
+				if(isDeadEnd(p)) deadEnds.add(p);
+			}	
+		}	
 	}
 	
+	public boolean isDeadEnd(Point p) {
+		if(p.x<0 || p.x>=width || p.y<0 || p.y>=height)
+			throw new IllegalArgumentException();
+		
+		return ((grid[p.x][p.y] & (grid[p.x][p.y] - 1)) == 0);
+	}
+
 	public int[][] computeDistances(Point start) { //TODO Improve me!
 		if(start.x<0 || start.x>=width || start.y<0 || start.y>=height)
 			throw new IllegalArgumentException();
