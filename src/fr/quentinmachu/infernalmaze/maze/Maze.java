@@ -13,6 +13,7 @@ public class Maze {
 	private int height;
 	private Point origin;
 	private ArrayList<Point> deadEnds;
+	//private ArrayList<Point> soluce;
 	
 	private Point end;
 	private int[][] distancesFromOrigin;
@@ -25,7 +26,7 @@ public class Maze {
 	// 0000 <=> an entirely closed cell
 	// 0001 <=> a cell opened on the north direction
 	private byte grid[][];
-	
+
 	public Maze(int width, int height) {
 		this(width, height, new Point(rnd.nextInt(width), rnd.nextInt(height)), new ArrayList<Point>());
 	}
@@ -224,6 +225,55 @@ public class Maze {
 		
 		return s;
 	}
+	
+	public String toString(ArrayList<Point> PointFromBot, ArrayList<Point> PointToTop) {
+		// Legends : U means point comming from bottom maze with a south wall on this point
+		// î means point going to top maze level with south wall on this point
+		// ^ means point going to top maze without south wall on this point
+		// v means point comming from botton maze without south wall on this point
+		
+		String s = "";
+		
+		s += "<Maze width="+width+" height="+height+" origin=("+origin.x+","+origin.y+") end=("+end.x+","+end.y+")>\n";
+		
+		// First line
+		s += " ";
+		for(int i = 0; i<width*2 - 1; i++) s += "_";
+		s += " \n";
+		
+		for(int y = 0; y < height; y++) {
+			s += "|";
+			
+			for(int x = 0; x < width; x++) {
+				Point p = new Point(x,y);
+				if(grid[x][y] == 0 && y+1 < height && grid[x][y+1] == 0) s += " ";
+				else if((grid[x][y] & Direction.SOUTH.bit) != 0 && PointToTop.contains(p) && !PointToTop.isEmpty()) s+= "^";
+				else if((grid[x][y] & Direction.SOUTH.bit) != 0 && PointFromBot.contains(p) && !PointFromBot.isEmpty()) s+= "V";
+				else if((grid[x][y] & Direction.SOUTH.bit) != 0) s += " ";
+				else if(PointToTop.contains(p) && !PointToTop.isEmpty()) s+= "î";
+				else if(PointFromBot.contains(p) && !PointFromBot.isEmpty()) s+= "U";
+				else s += "_";
+				
+				if(grid[x][y] == 0 && x+1 < width && grid[x+1][y] == 0) {
+					if(y+1 < height && (grid[x][y+1] == 0 || grid[x+1][y+1] == 0)) s += " ";
+					else s += "_";
+				} else if((grid[x][y] & Direction.EAST.bit) != 0) {
+					if(((grid[x][y] | grid[x+1][y]) & Direction.SOUTH.bit) != 0) s += " ";
+					else s += "_";
+				} else {
+					s += "|";
+				}
+			}
+			
+			s += "\n";
+		}
+		
+		s += "</Maze>\n";
+		
+		return s;
+	}
+	
+	
 
 	/**
 	 * @return the width
