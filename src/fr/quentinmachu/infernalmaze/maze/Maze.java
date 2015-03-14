@@ -166,18 +166,22 @@ public class Maze {
 	}
 	
 	public ArrayList<Point> getNeighbors(Point p) {
-		if(p.x<0 || p.x>=width || p.y<0 || p.y>=height)
+		return getNeighbors(p.x, p.y);
+	}
+	
+	public ArrayList<Point> getNeighbors(int x, int y) {
+		if(x<0 || x>=width || y<0 || y>=height)
 			throw new IllegalArgumentException();
 		
 		ArrayList<Point> neighbors = new ArrayList<Point>();
 		
 		List<Direction> directions = Arrays.asList(Direction.values());
 		for(Direction d: directions) {
-			Point np = new Point(p.x + d.dx, p.y + d.dy);
+			Point np = new Point(x + d.dx, y + d.dy);
 			
 			// If the new point is valid and the path is opened
 			if(np.x >= 0 && np.y >= 0 && np.x < width && np.y < height) {
-				if((grid[p.x][p.y] & d.bit) == d.bit)
+				if(isPathOpened(x, y, d))
 					neighbors.add(np);
 			}
 		}
@@ -185,6 +189,17 @@ public class Maze {
 		return neighbors;
 	}
 
+	public boolean isPathOpened(Point p, Direction d) {
+		return isPathOpened(p.x, p.y, d);
+	}
+	
+	public boolean isPathOpened(int x, int y, Direction d) {
+		if(x<0 || x>=width || y<0 || y>=height)
+			throw new IllegalArgumentException();
+		
+		return ((grid[x][y] & d.bit) == d.bit);
+	}
+	
 	////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////
 	
@@ -304,10 +319,20 @@ public class Maze {
 	}
 
 	/**
-	 * @return the grid
+	 * @return the grid cell
 	 */
-	public byte[][] getGrid() {
-		return grid;
+	public byte getCell(Point p) {
+		return getCell(p.x, p.y);
+	}
+	
+	/**
+	 * @return the grid cell
+	 */
+	public byte getCell(int x, int y) {
+		if(x<0 || x>=width || y<0 || y>=height)
+			throw new IllegalArgumentException();
+		
+		return grid[x][y];
 	}
 
 	/**
