@@ -54,22 +54,23 @@ public class BallObject implements GameObject {
 		// Collision
 		int mazeCoordX = (int) Math.floor(position.x);
 		int mazeCoordY = (int) Math.floor(position.y);
-		if(velocity.x > 0 && position.x + SPHERE_RADIUS >= mazeCoordX+1 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.EAST)) {
-			position.x = mazeCoordX + 1 - SPHERE_RADIUS;
+		if(velocity.x > 0 && position.x + SPHERE_RADIUS >= mazeCoordX + 1 - MazeObject.WALL_THICKNESS/2 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.EAST)) {
+			position.x = mazeCoordX + 1 - SPHERE_RADIUS - MazeObject.WALL_THICKNESS/2;
 			velocity.x = - velocity.x / COLLISION_VELOCITY_DIVIDER;
 		}
-		if(velocity.x < 0 && position.x - SPHERE_RADIUS <= mazeCoordX && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.WEST)) {
-			position.x = mazeCoordX + SPHERE_RADIUS;
+		if(velocity.x < 0 && position.x - SPHERE_RADIUS <= mazeCoordX + MazeObject.WALL_THICKNESS/2 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.WEST)) {
+			position.x = mazeCoordX + SPHERE_RADIUS + MazeObject.WALL_THICKNESS/2;
 			velocity.x = - velocity.x / COLLISION_VELOCITY_DIVIDER;
 		}
-		if(velocity.y > 0 && position.y + SPHERE_RADIUS >= mazeCoordY+1 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.SOUTH)) {
-			position.y = mazeCoordY + 1 - SPHERE_RADIUS;
+		if(velocity.y > 0 && position.y + SPHERE_RADIUS >= mazeCoordY + 1 - MazeObject.WALL_THICKNESS/2 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.SOUTH)) {
+			position.y = mazeCoordY + 1 - SPHERE_RADIUS - MazeObject.WALL_THICKNESS/2;
 			velocity.y = - velocity.y / COLLISION_VELOCITY_DIVIDER;
 		}
-		if(velocity.y < 0 && position.y - SPHERE_RADIUS <= mazeCoordY && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.NORTH)) {
-			position.y = mazeCoordY + SPHERE_RADIUS;
+		if(velocity.y < 0 && position.y - SPHERE_RADIUS <= mazeCoordY + MazeObject.WALL_THICKNESS/2 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.NORTH)) {
+			position.y = mazeCoordY + SPHERE_RADIUS + MazeObject.WALL_THICKNESS/2;
 			velocity.y = - velocity.y / COLLISION_VELOCITY_DIVIDER;
 		}
+		//TODO Collision with wall sides
 	}
 	
 	@Override

@@ -31,8 +31,8 @@ import fr.quentinmachu.infernalmaze.ui.math.Vector4f;
 import fr.quentinmachu.infernalmaze.ui.state.GameState;
 
 public class MazeObject implements GameObject {
-	public static final double WALL_THICKNESS = 0.2;
-	public static final double WALL_HEIGHT = 1;
+	public static final float WALL_THICKNESS = 0.2f;
+	public static final float WALL_HEIGHT = 1f;
 	public static final float MAZE_MAX_INCLINATION = 20f;
 	
 	private GameState gameState;
@@ -93,7 +93,6 @@ public class MazeObject implements GameObject {
         float y = interpolatedPosition.y;*/
      	
         // Floor
-		
         floorRenderer.begin();
         floorTexture.bind();
         floorRenderer.setModel(model);
@@ -116,23 +115,21 @@ public class MazeObject implements GameObject {
         wallRenderer.setModel(model);
                 
         for(int y = 0; y < maze.getHeight(); y++) {
-        	// Left wall
-        	drawXYAlignedWall(0, y, 0, 0, y+1, 0);
+        	drawWall(0, y, 0, Direction.WEST);
+        	
         	for(int x = 0; x < maze.getWidth(); x++) {
-				// Top wall
-        		drawXYAlignedWall(x, 0, 0, x+1, 0, 0);
+        		drawWall(x, 0, 0, Direction.NORTH);
+        		
         		if(
 					((maze.getCell(x, y) != 0 || y+1 >= maze.getHeight() || maze.getCell(x, y+1) != 0) && ((maze.getCell(x, y) & Direction.SOUTH.bit) == 0))
 					|| ((maze.getCell(x, y) == 0 && x+1 < maze.getWidth() && maze.getCell(x+1, y) == 0) && (y+1 >= maze.getHeight() && (maze.getCell(x, y+1) != 0 && maze.getCell(x+1, y+1) != 0)))
 					|| ((maze.getCell(x, y) & Direction.EAST.bit) != 0) && (((maze.getCell(x, y) | maze.getCell(x+1, y)) & Direction.SOUTH.bit) == 0)
 				) {
-					// Bottom wall
-					drawXYAlignedWall(x, y+1, 0, x+1, y+1, 0);
+        			drawWall(x, y, 0, Direction.SOUTH);
 				}
 				
 				if((maze.getCell(x, y) != 0 || x+1 >= maze.getWidth() || maze.getCell(x+1, y) != 0) && ((maze.getCell(x, y) & Direction.EAST.bit) == 0)) {
-					// Right wall
-					drawXYAlignedWall(x+1, y, 0, x+1, y+1, 0);
+					drawWall(x, y, 0, Direction.EAST);
 				}
 			}
 		}
@@ -147,20 +144,49 @@ public class MazeObject implements GameObject {
 		transform = transform.multiply(Matrix4f.translate(-maze.getWidth()/2, -maze.getHeight()/2, 0));
 		return transform;
 	}
-
-
-	private void drawXYAlignedWall(int x1, int y1, int z1, int x2, int y2, int z2) {
-		wallRenderer.reserveVertices(6);
+	
+	private void drawWall(int x, int y, int z, Direction d) {
+		int x2, y2;
+		float dx, dy;
 		
-		wallRenderer.addVertex(x1, y1, z1, 0, 0);
-		wallRenderer.addVertex(x1, y1, (float) (z1+WALL_HEIGHT), 0, 1);
-		wallRenderer.addVertex(x2, y2, z2, 1, 0);
+		switch(d) {
+			case NORTH:
+				x2 = x + 1;
+				y2 = y;
+				dx = 0;
+				dy = (float) (WALL_THICKNESS / 2);
+				break;
+			case SOUTH:
+				y = y + 1;
+				x2 = x + 1;
+				y2 = y;
+				dx = 0;
+				dy = (float) (WALL_THICKNESS / 2);
+				break;
+			case WEST:
+				x2 = x;
+				y2 = y + 1;
+				dx = (float) (WALL_THICKNESS / 2);
+				dy = 0;
+				break;
+			case EAST:
+				x = x + 1;
+				x2 = x;
+				y2 = y + 1;
+				dx = (float) (WALL_THICKNESS / 2);
+				dy = 0;
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported direction");
+		}
 		
-		wallRenderer.addVertex(x2, y2, z2, 1, 0);
-		wallRenderer.addVertex(x1, y1, (float) (z1+WALL_HEIGHT), 0, 1);
-		wallRenderer.addVertex(x2, y2, (float) (z2+WALL_HEIGHT), 1, 1);
+		wallRenderer.drawSurface(x+dx, y+dy, 0f, x2+dx, y2+dy, 0f, x+dx, y+dy, WALL_HEIGHT, x2+dx, y2+dy, WALL_HEIGHT);
+		wallRenderer.drawSurface(x-dx, y-dy, 0f, x2-dx, y2-dy, 0f, x-dx, y-dy, WALL_HEIGHT, x2-dx, y2-dy, WALL_HEIGHT);
+		wallRenderer.drawSurface(x+dx, y+dy, WALL_HEIGHT, x2+dx, y2+dy, WALL_HEIGHT, x-dx, y-dy, WALL_HEIGHT, x2-dx, y2-dy, WALL_HEIGHT); // Roof
+		wallRenderer.drawSurface(x+dx, y+dy, 0f, x-dx, y-dy, 0f, x+dx, y+dy, WALL_HEIGHT, x-dx, y-dy, WALL_HEIGHT); // Side 1
+		wallRenderer.drawSurface(x2+dx, y2+dy, 0f, x2-dx, y2-dy, 0f, x2+dx, y2+dy, WALL_HEIGHT, x2-dx, y2-dy, WALL_HEIGHT); // Side 2
 	}
-
+	
 	/**
 	 * @return the maze
 	 */

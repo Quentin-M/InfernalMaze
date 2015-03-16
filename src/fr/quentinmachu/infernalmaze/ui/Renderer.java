@@ -247,6 +247,18 @@ public class Renderer {
     	vertices.put(x).put(y).put(z).put(c.getRed() / 255f).put(c.getGreen() / 255f).put(c.getBlue() / 255f).put(s).put(t);
         numVertices++;
     }
+    
+	public void drawSurface(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4) {
+		reserveVertices(6);
+		
+		addVertex(x1, y1, z1, 0, 0);
+		addVertex(x2, y2, z2, 1, 0);
+		addVertex(x3, y3, z3, 0, 1);
+		
+		addVertex(x2, y2, z2, 1, 0);
+		addVertex(x3, y3, z3, 0, 1);
+		addVertex(x4, y4, z4, 1, 1);
+	}
 
     /**
      * Dispose renderer and clean up its used data.
