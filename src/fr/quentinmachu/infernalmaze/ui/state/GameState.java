@@ -53,7 +53,7 @@ public class GameState implements State {
 	public static final int MAZE_SIZE = 10;
     
     // Camera
-    public static final float FOV = 40;
+    public static final float FOV = 35;
     public static final float NEAR = 1;
     public static final float FAR = 100;
     private Camera camera;
@@ -72,7 +72,7 @@ public class GameState implements State {
     @Override
     public void enter() {   	
     	// Initialize camera
-    	camera = new Camera(new Vector3f(MAZE_SIZE/2, MAZE_SIZE*2, 20), new Vector3f(MAZE_SIZE/2, MAZE_SIZE/2, 0), new Vector3f(0, 0, 1), FOV, NEAR, FAR);
+    	camera = new Camera(new Vector3f(MAZE_SIZE/2, MAZE_SIZE*1.5f, 20), new Vector3f(MAZE_SIZE/2, MAZE_SIZE/2, 0), new Vector3f(0, 0, 1), FOV, NEAR, FAR);
     	
         // Initialize the maze tower
     	mazeTower = new MazeTowerObject(this, new MazeTower(10, 10, 3));
