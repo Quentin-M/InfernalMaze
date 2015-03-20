@@ -44,33 +44,92 @@ public class BallObject implements GameObject {
 	@Override
 	public void update() {
 		float delta = (1f / Game.TARGET_UPS);
-				
+		
+		// Manage collision
+		collide();
+		
 		// Set position & velocity
 		float ax = (float) (GRAVITY * Math.sin(Math.toRadians(gameState.getCurrentMazeObject().getRy())));
 		float ay = (float) (GRAVITY * Math.sin(Math.toRadians(-gameState.getCurrentMazeObject().getRx())));
 		setPosition(position.add(new Vector3f((float) ((velocity.x * delta) + (1/2 * ax * Math.pow(delta, 2))), (float) ((velocity.y * delta) + (1/2 * ay * Math.pow(delta, 2))), 0)));
 		setVelocity(velocity.add(new Vector3f(ax * delta, ay * delta, 0)));
 		
-		// Collision
+
+	private void collide() {
 		int mazeCoordX = (int) Math.floor(position.x);
 		int mazeCoordY = (int) Math.floor(position.y);
+		
+		// Collision (Walls)
 		if(velocity.x > 0 && position.x + SPHERE_RADIUS >= mazeCoordX + 1 - MazeObject.WALL_THICKNESS/2 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.EAST)) {
+			// Right wall
 			position.x = mazeCoordX + 1 - SPHERE_RADIUS - MazeObject.WALL_THICKNESS/2;
 			velocity.x = - velocity.x / COLLISION_VELOCITY_DIVIDER;
 		}
 		if(velocity.x < 0 && position.x - SPHERE_RADIUS <= mazeCoordX + MazeObject.WALL_THICKNESS/2 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.WEST)) {
+			// Left wall
 			position.x = mazeCoordX + SPHERE_RADIUS + MazeObject.WALL_THICKNESS/2;
 			velocity.x = - velocity.x / COLLISION_VELOCITY_DIVIDER;
 		}
 		if(velocity.y > 0 && position.y + SPHERE_RADIUS >= mazeCoordY + 1 - MazeObject.WALL_THICKNESS/2 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.SOUTH)) {
+			// South wall
 			position.y = mazeCoordY + 1 - SPHERE_RADIUS - MazeObject.WALL_THICKNESS/2;
 			velocity.y = - velocity.y / COLLISION_VELOCITY_DIVIDER;
 		}
 		if(velocity.y < 0 && position.y - SPHERE_RADIUS <= mazeCoordY + MazeObject.WALL_THICKNESS/2 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY, Direction.NORTH)) {
+			// Top wall
 			position.y = mazeCoordY + SPHERE_RADIUS + MazeObject.WALL_THICKNESS/2;
 			velocity.y = - velocity.y / COLLISION_VELOCITY_DIVIDER;
 		}
-		//TODO Collision with wall sides
+		// Collision (Wall sides)
+		if(position.y - SPHERE_RADIUS <= mazeCoordY && position.x - SPHERE_RADIUS <= mazeCoordX) {
+			if(velocity.x < 0 && mazeCoordX-1 >= 0 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX-1, mazeCoordY, Direction.NORTH)) {
+				// Top-Left corner. Horizontal
+				//position.x = mazeCoordX + SPHERE_RADIUS;
+				velocity.x = - velocity.x / COLLISION_VELOCITY_DIVIDER;
+				//System.out.println("SupGauche - Horizontal");
+			}
+			if(velocity.y < 0 && mazeCoordY-1 >= 0 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY-1, Direction.WEST)) {
+				// Top-Left corner. Vertical
+				//position.y = mazeCoordY + SPHERE_RADIUS;
+				velocity.y = - velocity.y / COLLISION_VELOCITY_DIVIDER;
+			}
+		}
+		if(position.y - SPHERE_RADIUS <= mazeCoordY && position.x + SPHERE_RADIUS >= mazeCoordX+1) {
+			if(velocity.x > 0 && mazeCoordX+1 <= gameState.getCurrentMazeObject().getMaze().getWidth() && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX+1, mazeCoordY, Direction.NORTH)) {
+				// Top-Right corner. Horizontal
+				//position.x = mazeCoordX + 1 - SPHERE_RADIUS;
+				velocity.x = - velocity.x / COLLISION_VELOCITY_DIVIDER;
+			}
+			if(velocity.y < 0 && mazeCoordY-1 >= 0 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY-1, Direction.EAST)) {
+				// Top-Right corner. Vertical
+				//position.y = mazeCoordY + SPHERE_RADIUS;
+				velocity.y = - velocity.y / COLLISION_VELOCITY_DIVIDER;
+			}
+		}
+		if(position.y + SPHERE_RADIUS >= mazeCoordY+1 && position.x - SPHERE_RADIUS <= mazeCoordX) {
+			if(velocity.x < 0 && mazeCoordX-1 >= 0 && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX-1, mazeCoordY, Direction.SOUTH)) {
+				// South-West corner. Horizontal
+				//position.x = mazeCoordX + SPHERE_RADIUS;
+				velocity.x = - velocity.x / COLLISION_VELOCITY_DIVIDER;
+			}
+			if(velocity.y > 0 && mazeCoordY+1 < gameState.getCurrentMazeObject().getMaze().getHeight() && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY+1, Direction.WEST)) {
+				// South-West corner. Vertical
+				//position.y = mazeCoordY + 1 - SPHERE_RADIUS;
+				velocity.y = - velocity.y / COLLISION_VELOCITY_DIVIDER;
+			}
+		}
+		if(position.y + SPHERE_RADIUS >= mazeCoordY+1 && position.x + SPHERE_RADIUS >= mazeCoordX+1) {
+			if(velocity.x > 0 && mazeCoordX+1 <= gameState.getCurrentMazeObject().getMaze().getWidth() && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX+1, mazeCoordY, Direction.SOUTH)) {
+				// South-East corner. Horizontal
+				//position.x = mazeCoordX + 1 - SPHERE_RADIUS;
+				velocity.x = - velocity.x / COLLISION_VELOCITY_DIVIDER;
+			}
+			if(velocity.y > 0 && mazeCoordY+1 < gameState.getCurrentMazeObject().getMaze().getHeight() && !gameState.getCurrentMazeObject().getMaze().isPathOpened(mazeCoordX, mazeCoordY+1, Direction.EAST)) {
+				// South-East corner. Vertical
+				//position.y = mazeCoordY + 1 - SPHERE_RADIUS;
+				velocity.y = - velocity.y / COLLISION_VELOCITY_DIVIDER;
+			}
+		}
 	}
 	
 	@Override
