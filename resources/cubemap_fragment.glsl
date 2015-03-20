@@ -1,11 +1,11 @@
 #version 330 core
 
 in vec3 vertexColor;
-in vec2 textureCoord;
+in vec3 textureCoord;
 
-out vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
-uniform sampler2D texImage;
+uniform samplerCube texImage;
 
 void main() {
     vec4 textureColor = texture(texImage, textureCoord);

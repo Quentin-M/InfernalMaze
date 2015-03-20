@@ -24,31 +24,18 @@
 package fr.quentinmachu.infernalmaze.ui;
 
 import java.awt.Color;
-import java.awt.FontFormatException;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
-
-import fr.quentinmachu.infernalmaze.game.Game;
 import fr.quentinmachu.infernalmaze.ui.math.Matrix4f;
 import fr.quentinmachu.infernalmaze.ui.math.Vector3f;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.glBlendFunc;
-import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glDrawArrays;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
@@ -62,7 +49,9 @@ import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
  * @author Heiko Brumme
  */
 public class Renderer {
-    public static final int VERTICES_BUFFER_SIZE = (int) Math.pow(2, 14);
+    public static final int VERTICES_BUFFER_SIZE = (int) Math.pow(2, 16);
+    
+    private boolean useCubeMap;
     
     private Camera camera;
     private Matrix4f model;
@@ -80,7 +69,12 @@ public class Renderer {
     private int primitive = GL_TRIANGLES;
     
     public Renderer(Camera camera) {
+    	this(camera, false);
+    }
+    
+    public Renderer(Camera camera, boolean useCubeMap) {
     	this.camera = camera;
+    	this.useCubeMap = useCubeMap;
     }
     
     /**
@@ -107,8 +101,13 @@ public class Renderer {
         drawing = false;
 
         /* Load shaders */
-        vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "resources/default_vertex.glsl");
-        fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "resources/default_fragment.glsl");
+        if(!useCubeMap) {
+        	 vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "resources/default_vertex.glsl");
+             fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "resources/default_fragment.glsl");
+        } else {
+        	vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "resources/cubemap_vertex.glsl");
+            fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "resources/cubemap_fragment.glsl");
+        }
 
         /* Create shader program */
         program = new ShaderProgram();
@@ -170,6 +169,18 @@ public class Renderer {
             int width = widthBuffer.get();
             int height = heightBuffer.get();
 
+            /* Flip vertices buffer */
+            vertices.flip();
+
+            /* Re-bind & Re-use program */
+            if (vao != null) {
+                vao.bind();
+            } else {
+                vbo.bind(GL_ARRAY_BUFFER);
+                specifyVertexAttributes();
+            }
+            program.use();
+            
             /* Set model matrix */
             int uniModel = program.getUniformLocation("model");
             program.setUniform(uniModel, model);
@@ -183,16 +194,7 @@ public class Renderer {
             Matrix4f view = Matrix4f.lookAt(camera.getEye(), camera.getCenter(), camera.getUp());
             int uniView = program.getUniformLocation("view");
             program.setUniform(uniView, view);
-
-            vertices.flip();
-
-            if (vao != null) {
-                vao.bind();
-            } else {
-                vbo.bind(GL_ARRAY_BUFFER);
-                specifyVertexAttributes();
-            }
-
+            
             /* Upload the new vertex data */
             vbo.bind(GL_ARRAY_BUFFER);
             vbo.uploadSubData(GL_ARRAY_BUFFER, 0, vertices);
@@ -212,7 +214,7 @@ public class Renderer {
      * @param count the number of vertices to reserve
      */
     public void reserveVertices(int count) {
-    	if(vertices.remaining() < count * 8) {
+    	if(vertices.remaining() < count * 11) {
     		/* We need more space in the buffer, so flush it */
             flush();
     	}
@@ -243,8 +245,9 @@ public class Renderer {
      * @param t coordinate
      * @param c The color to use
      */
-    public void addVertex(float x, float y, float z, float s, float t, Color c) {  
-    	vertices.put(x).put(y).put(z).put(c.getRed() / 255f).put(c.getGreen() / 255f).put(c.getBlue() / 255f).put(s).put(t);
+    public void addVertex(float x, float y, float z, float s, float t, Color c) {
+    	Vector3f normal = new Vector3f(x, y, z).normalize();
+    	vertices.put(x).put(y).put(z).put(c.getRed() / 255f).put(c.getGreen() / 255f).put(c.getBlue() / 255f).put(s).put(t).put(normal.x).put(normal.y).put(normal.z);
         numVertices++;
     }
     
@@ -280,17 +283,22 @@ public class Renderer {
         /* Specify Vertex Pointer */
         int posAttrib = program.getAttributeLocation("position");
         program.enableVertexAttribute(posAttrib);
-        program.pointVertexAttribute(posAttrib, 3, 8 * Float.BYTES, 0);
+        program.pointVertexAttribute(posAttrib, 3, 11 * Float.BYTES, 0);
 
         /* Specify Color Pointer */
         int colAttrib = program.getAttributeLocation("color");
         program.enableVertexAttribute(colAttrib);
-        program.pointVertexAttribute(colAttrib, 3, 8 * Float.BYTES, 3 * Float.BYTES);
+        program.pointVertexAttribute(colAttrib, 3, 11 * Float.BYTES, 3 * Float.BYTES);
 
         /* Specify Texture Pointer */
         int texAttrib = program.getAttributeLocation("texcoord");
         program.enableVertexAttribute(texAttrib);
-        program.pointVertexAttribute(texAttrib, 2, 8 * Float.BYTES, 6 * Float.BYTES);
+        program.pointVertexAttribute(texAttrib, 2, 11 * Float.BYTES, 6 * Float.BYTES);
+        
+        /* Specify Normal Pointer */
+        int normalAttrib = program.getAttributeLocation("normal");
+        program.enableVertexAttribute(normalAttrib);
+        program.pointVertexAttribute(normalAttrib, 3, 11 * Float.BYTES, 8 * Float.BYTES);
     }
 
 	/**

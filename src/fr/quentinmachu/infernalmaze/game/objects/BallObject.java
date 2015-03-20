@@ -27,10 +27,10 @@ public class BallObject implements GameObject {
 	public BallObject(GameState gameState) {
 		this.gameState = gameState;
 		
-		renderer = new Renderer(gameState.getCamera());
+		renderer = new Renderer(gameState.getCamera(), true);
 		renderer.init();
 		renderer.setPrimitive(GL11.GL_TRIANGLE_STRIP);
-		texture = Texture.loadTexture("resources/example.png");
+		texture = Texture.loadTexture("resources/earth.png", true);
 		
 		position = new Vector3f();
 		velocity = new Vector3f();
@@ -111,10 +111,11 @@ public class BallObject implements GameObject {
     			cos = (float) Math.cos(angleB * Math.PI / 180.0);
     			sin = -(float) Math.sin(angleB * Math.PI / 180.0);
 
-    			renderer.addVertex(r2*cos, h2, r2*sin, 0, 0);
-    			renderer.addVertex(r1*cos, h1, r1*sin, 0, 0);
+    			renderer.addVertex(r2*cos, h2, r2*sin, ((-r2*sin/Math.abs(r2*cos)) + 1)/2, ((-h2/Math.abs(r2*cos)) + 1)/2);
+    			renderer.addVertex(r1*cos, h1, r1*sin, ((-r1*sin/Math.abs(r1*cos)) + 1)/2, ((-h1/Math.abs(r1*cos)) + 1)/2);
     		}
     	}
+       	
         renderer.end();
 	}
 

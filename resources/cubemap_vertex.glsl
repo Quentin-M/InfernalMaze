@@ -6,7 +6,7 @@ in vec2 texcoord;
 in vec3 normal;
 
 out vec3 vertexColor;
-out vec2 textureCoord;
+out vec3 textureCoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -14,7 +14,7 @@ uniform mat4 projection;
 
 void main() {
     vertexColor = color;
-    textureCoord = texcoord;
+    textureCoord = normal;
     mat4 mvp = projection * view * model;
     gl_Position = mvp * vec4(position, 1.0);
 }
