@@ -171,6 +171,41 @@ public class Matrix2f {
     }
 
     /**
+	 * Inverts this matrix
+	 * 
+	 * @return The inverted matrix
+	 * @throws RuntimeException if the matrix is non invertible
+	 */
+    public Matrix2f invert() {
+		float determinant = determinant();
+		if(determinant == 0) throw new RuntimeException("This matrix is not invertible");
+		
+		Matrix2f result = new Matrix2f();
+		
+		float determinant_inv = 1f/determinant;
+		float t00 = this.m11 * determinant_inv;
+		float t01 = -this.m01 * determinant_inv;
+		float t11 = this.m00 * determinant_inv;
+		float t10 = -this.m10 * determinant_inv;
+		
+		result.m00 = t00;
+		result.m01 = t01;
+		result.m10 = t10;
+		result.m11 = t11;
+		
+		return result;
+	}
+
+    /**
+     * Calculate the determinant of this matrix
+     * 
+	 * @return the determinant of this matrix
+	 */
+	public float determinant() {
+		return m00 * m11 - m01 * m10;
+	}
+	
+    /**
      * Returns the Buffer representation of this vector.
      *
      * @return Vector as FloatBuffer

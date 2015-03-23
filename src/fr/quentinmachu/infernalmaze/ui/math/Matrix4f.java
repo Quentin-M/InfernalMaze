@@ -24,6 +24,7 @@
 package fr.quentinmachu.infernalmaze.ui.math;
 
 import java.nio.FloatBuffer;
+
 import org.lwjgl.BufferUtils;
 
 /**
@@ -258,6 +259,92 @@ public class Matrix4f {
         return result;
     }
 
+    /**
+	 * Inverts this matrix
+	 * 
+	 * @return The inverted matrix
+	 * @throws RuntimeException if the matrix is non invertible
+	 */
+    public Matrix4f invert() {
+		float determinant = determinant();
+		if(determinant == 0) throw new RuntimeException("This matrix is not invertible");
+		
+		Matrix4f result = new Matrix4f();
+		
+		float determinant_inv = 1f/determinant;
+		float t00 =  determinant3x3(this.m11, this.m12, this.m13, this.m21, this.m22, this.m23, this.m31, this.m32, this.m33);
+		float t01 = -determinant3x3(this.m10, this.m12, this.m13, this.m20, this.m22, this.m23, this.m30, this.m32, this.m33);
+		float t02 =  determinant3x3(this.m10, this.m11, this.m13, this.m20, this.m21, this.m23, this.m30, this.m31, this.m33);
+		float t03 = -determinant3x3(this.m10, this.m11, this.m12, this.m20, this.m21, this.m22, this.m30, this.m31, this.m32);
+		float t10 = -determinant3x3(this.m01, this.m02, this.m03, this.m21, this.m22, this.m23, this.m31, this.m32, this.m33);
+		float t11 =  determinant3x3(this.m00, this.m02, this.m03, this.m20, this.m22, this.m23, this.m30, this.m32, this.m33);
+		float t12 = -determinant3x3(this.m00, this.m01, this.m03, this.m20, this.m21, this.m23, this.m30, this.m31, this.m33);
+		float t13 =  determinant3x3(this.m00, this.m01, this.m02, this.m20, this.m21, this.m22, this.m30, this.m31, this.m32);
+		float t20 =  determinant3x3(this.m01, this.m02, this.m03, this.m11, this.m12, this.m13, this.m31, this.m32, this.m33);
+		float t21 = -determinant3x3(this.m00, this.m02, this.m03, this.m10, this.m12, this.m13, this.m30, this.m32, this.m33);
+		float t22 =  determinant3x3(this.m00, this.m01, this.m03, this.m10, this.m11, this.m13, this.m30, this.m31, this.m33);
+		float t23 = -determinant3x3(this.m00, this.m01, this.m02, this.m10, this.m11, this.m12, this.m30, this.m31, this.m32);
+		float t30 = -determinant3x3(this.m01, this.m02, this.m03, this.m11, this.m12, this.m13, this.m21, this.m22, this.m23);
+		float t31 =  determinant3x3(this.m00, this.m02, this.m03, this.m10, this.m12, this.m13, this.m20, this.m22, this.m23);
+		float t32 = -determinant3x3(this.m00, this.m01, this.m03, this.m10, this.m11, this.m13, this.m20, this.m21, this.m23);
+		float t33 =  determinant3x3(this.m00, this.m01, this.m02, this.m10, this.m11, this.m12, this.m20, this.m21, this.m22);
+
+		// transpose and divide by the determinant
+		result.m00 = t00*determinant_inv;
+		result.m11 = t11*determinant_inv;
+		result.m22 = t22*determinant_inv;
+		result.m33 = t33*determinant_inv;
+		result.m01 = t10*determinant_inv;
+		result.m10 = t01*determinant_inv;
+		result.m20 = t02*determinant_inv;
+		result.m02 = t20*determinant_inv;
+		result.m12 = t21*determinant_inv;
+		result.m21 = t12*determinant_inv;
+		result.m03 = t30*determinant_inv;
+		result.m30 = t03*determinant_inv;
+		result.m13 = t31*determinant_inv;
+		result.m31 = t13*determinant_inv;
+		result.m32 = t23*determinant_inv;
+		result.m23 = t32*determinant_inv;
+		
+		return result;
+	}
+
+    /**
+     * Calculate the determinant of this matrix
+     * 
+	 * @return the determinant of this matrix
+	 */
+	public float determinant() {
+		float f = m00
+				* ((m11 * m22 * m33 + m12 * m23 * m31 + m13 * m21 * m32)
+						- m13 * m22 * m31
+						- m11 * m23 * m32
+						- m12 * m21 * m33);
+			f -= m01
+				* ((m10 * m22 * m33 + m12 * m23 * m30 + m13 * m20 * m32)
+					- m13 * m22 * m30
+					- m10 * m23 * m32
+					- m12 * m20 * m33);
+			f += m02
+				* ((m10 * m21 * m33 + m11 * m23 * m30 + m13 * m20 * m31)
+					- m13 * m21 * m30
+					- m10 * m23 * m31
+					- m11 * m20 * m33);
+			f -= m03
+				* ((m10 * m21 * m32 + m11 * m22 * m30 + m12 * m20 * m31)
+					- m12 * m21 * m30
+					- m10 * m22 * m31
+					- m11 * m20 * m32);
+			return f;
+	}
+	
+	private static float determinant3x3(float t00, float t01, float t02, float t10, float t11, float t12, float t20, float t21, float t22) {
+		return t00 * (t11 * t22 - t12 * t21)
+		       + t01 * (t12 * t20 - t10 * t22)
+		       + t02 * (t10 * t21 - t11 * t20);
+	}
+	
     /**
      * Returns the Buffer representation of this vector.
      *

@@ -7,12 +7,14 @@ import fr.quentinmachu.infernalmaze.maze.Direction;
 import fr.quentinmachu.infernalmaze.ui.Renderer;
 import fr.quentinmachu.infernalmaze.ui.Texture;
 import fr.quentinmachu.infernalmaze.ui.math.Matrix4f;
+import fr.quentinmachu.infernalmaze.ui.math.Vector2f;
 import fr.quentinmachu.infernalmaze.ui.math.Vector3f;
+import fr.quentinmachu.infernalmaze.ui.math.Vector4f;
 import fr.quentinmachu.infernalmaze.ui.state.GameState;
 
 public class BallObject implements GameObject {   
 	public static final float SPHERE_STEP = 10f;
-	public static final float SPHERE_RADIUS = 0.25f;	
+	public static final float SPHERE_RADIUS = 0.30f;	
 	public static final float GRAVITY = 15f;
 	public static final float COLLISION_VELOCITY_DIVIDER = 3f;
 	
@@ -23,6 +25,7 @@ public class BallObject implements GameObject {
 	
 	private Vector3f position;
 	private Vector3f velocity;
+	private Vector2f rotation;
 	
 	public BallObject(GameState gameState) {
 		this.gameState = gameState;
@@ -34,6 +37,7 @@ public class BallObject implements GameObject {
 		
 		position = new Vector3f();
 		velocity = new Vector3f();
+		rotation = new Vector2f();
 	}
 
 	@Override
@@ -45,15 +49,19 @@ public class BallObject implements GameObject {
 	public void update() {
 		float delta = (1f / Game.TARGET_UPS);
 		
-		// Manage collision
-		collide();
-		
 		// Set position & velocity
 		float ax = (float) (GRAVITY * Math.sin(Math.toRadians(gameState.getCurrentMazeObject().getRy())));
 		float ay = (float) (GRAVITY * Math.sin(Math.toRadians(-gameState.getCurrentMazeObject().getRx())));
-		setPosition(position.add(new Vector3f((float) ((velocity.x * delta) + (1/2 * ax * Math.pow(delta, 2))), (float) ((velocity.y * delta) + (1/2 * ay * Math.pow(delta, 2))), 0)));
-		setVelocity(velocity.add(new Vector3f(ax * delta, ay * delta, 0)));
+		float dx = (float) ((velocity.x * delta) + (1/2 * ax * Math.pow(delta, 2)));
+		float dy = (float) ((velocity.y * delta) + (1/2 * ay * Math.pow(delta, 2)));
 		
+		setPosition(position.add(new Vector3f(dx, dy, 0)));
+		setVelocity(velocity.add(new Vector3f(ax * delta, ay * delta, 0)));
+		setRotation(rotation.add(new Vector2f((float) - Math.toDegrees(dy/SPHERE_RADIUS), (float) Math.toDegrees(dx/SPHERE_RADIUS))));
+	
+		// Manage collision
+		collide();
+	}
 
 	private void collide() {
 		int mazeCoordX = (int) Math.floor(position.x);
@@ -132,6 +140,8 @@ public class BallObject implements GameObject {
 		}
 	}
 	
+	Matrix4f rot = new Matrix4f();
+	
 	@Override
 	public void render(float alpha) {
         /*Vector2f interpolatedPosition = previousPosition.lerp(position, alpha);
@@ -142,9 +152,25 @@ public class BallObject implements GameObject {
 		
 		// Floor transformation
 		model = model.multiply(gameState.getCurrentMazeObject().getFloorTransformation());
-		
-		// Ball position
+
+		// Ball position / rotation
 		model = model.multiply(Matrix4f.translate(position.x, position.y, position.z));
+
+		//FIXME The rotation is wrong
+		Vector4f xAxis = new Vector4f(1, 0, 0, 0);
+		Matrix4f rotMatrixX = Matrix4f.rotate(rotation.x, xAxis.x, xAxis.y, xAxis.z);
+		Vector4f yAxis = new Vector4f(0, 1, 0, 0);
+		yAxis = rotMatrixX.invert().multiply(yAxis);
+		Matrix4f rotMatrixY = Matrix4f.rotate(rotation.y, yAxis.x, yAxis.y, yAxis.z);
+		model = model.multiply(rotMatrixX).multiply(rotMatrixY);
+		
+		/*float angle = (velocity.length() * alpha) / SPHERE_RADIUS;
+		Vector3f up = new Vector3f(0, 0, 1);
+		Vector3f vel = velocity.normalize();
+		Vector3f axis = vel.cross(up);
+		if(velocity.length() != 0) rot = rot.multiply(Matrix4f.rotate(angle, axis.x, axis.y, axis.z));*/
+		
+		model = model.multiply(rot);
 		
 		// Ball scale
 		model = model.multiply(Matrix4f.scale(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
@@ -206,5 +232,19 @@ public class BallObject implements GameObject {
 	 */
 	public void setVelocity(Vector3f velocity) {
 		this.velocity = velocity;
+	}
+
+	/**
+	 * @return the rotation
+	 */
+	public Vector2f getRotation() {
+		return rotation;
+	}
+
+	/**
+	 * @param rotation the rotation to set
+	 */
+	public void setRotation(Vector2f rotation) {
+		this.rotation = rotation;
 	}
 }

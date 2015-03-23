@@ -24,6 +24,7 @@
 package fr.quentinmachu.infernalmaze.ui.math;
 
 import java.nio.FloatBuffer;
+
 import org.lwjgl.BufferUtils;
 
 /**
@@ -208,6 +209,51 @@ public class Matrix3f {
         return result;
     }
 
+    /**
+	 * Inverts this matrix
+	 * 
+	 * @return The inverted matrix
+	 * @throws RuntimeException if the matrix is non invertible
+	 */
+    public Matrix3f invert() {
+		float determinant = determinant();
+		if(determinant == 0) throw new RuntimeException("This matrix is not invertible");
+		
+		Matrix3f result = new Matrix3f();
+		
+		float determinant_inv = 1f/determinant;
+		float t00 = this.m11 * this.m22 - this.m12* this.m21;
+		float t01 = - this.m10 * this.m22 + this.m12 * this.m20;
+		float t02 = this.m10 * this.m21 - this.m11 * this.m20;
+		float t10 = - this.m01 * this.m22 + this.m02 * this.m21;
+		float t11 = this.m00 * this.m22 - this.m02 * this.m20;
+		float t12 = - this.m00 * this.m21 + this.m01 * this.m20;
+		float t20 = this.m01 * this.m12 - this.m02 * this.m11;
+		float t21 = -this.m00 * this.m12 + this.m02 * this.m10;
+		float t22 = this.m00 * this.m11 - this.m01 * this.m10;
+
+		result.m00 = t00 * determinant_inv;
+		result.m11 = t11 * determinant_inv;
+		result.m22 = t22 * determinant_inv;
+		result.m01 = t10 * determinant_inv;
+		result.m10 = t01 * determinant_inv;
+		result.m20 = t02 * determinant_inv;
+		result.m02 = t20 * determinant_inv;
+		result.m12 = t21 * determinant_inv;
+		result.m21 = t12 * determinant_inv;
+		
+		return result;
+	}
+
+    /**
+     * Calculate the determinant of this matrix
+     * 
+	 * @return the determinant of this matrix
+	 */
+	public float determinant() {
+		return m00 * (m11 * m22 - m12 * m21) + m01 * (m12 * m20 - m10 * m22) + m02 * (m10 * m21 - m11 * m20);
+	}
+	
     /**
      * Returns the Buffer representation of this vector.
      *
