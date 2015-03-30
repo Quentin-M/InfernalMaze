@@ -24,6 +24,7 @@
 package fr.quentinmachu.infernalmaze.ui.math;
 
 import java.nio.FloatBuffer;
+
 import org.lwjgl.BufferUtils;
 
 /**
@@ -84,6 +85,8 @@ public class Vector3f {
      */
     public Vector3f normalize() {
         float length = length();
+        
+        if(length==0) return new Vector3f(x, y, z);
         return divide(length);
     }
 

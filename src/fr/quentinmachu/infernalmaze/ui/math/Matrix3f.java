@@ -34,9 +34,11 @@ import org.lwjgl.BufferUtils;
  */
 public class Matrix3f {
 
-    private float m00, m01, m02;
-    private float m10, m11, m12;
-    private float m20, m21, m22;
+    float m00;
+	float m01;
+	float m02;
+    float m10, m11, m12;
+    float m20, m21, m22;
 
     /**
      * Creates a 3x3 identity matrix.

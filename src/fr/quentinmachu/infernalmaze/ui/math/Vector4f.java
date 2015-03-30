@@ -24,6 +24,7 @@
 package fr.quentinmachu.infernalmaze.ui.math;
 
 import java.nio.FloatBuffer;
+
 import org.lwjgl.BufferUtils;
 
 /**
@@ -88,6 +89,8 @@ public class Vector4f {
      */
     public Vector4f normalize() {
         float length = length();
+
+        if(length==0) return new Vector4f(x, y, z, w);
         return divide(length);
     }
 
@@ -158,6 +161,15 @@ public class Vector4f {
         return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w;
     }
 
+	/**
+	 * Returns the norm of this vector.
+	 * 
+	 * @return Norm of the vector.
+	 */
+	public float norm() {
+	  return dot(this);
+	}
+	
     /**
      * Calculates a linear interpolation between this vector with another
      * vector.
