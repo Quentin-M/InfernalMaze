@@ -4,13 +4,12 @@ import org.lwjgl.opengl.GL11;
 
 import fr.quentinmachu.infernalmaze.game.Game;
 import fr.quentinmachu.infernalmaze.maze.Direction;
+import fr.quentinmachu.infernalmaze.ui.Material;
 import fr.quentinmachu.infernalmaze.ui.Renderer;
 import fr.quentinmachu.infernalmaze.ui.Texture;
 import fr.quentinmachu.infernalmaze.ui.math.Matrix4f;
 import fr.quentinmachu.infernalmaze.ui.math.Quaternion;
-import fr.quentinmachu.infernalmaze.ui.math.Vector2f;
 import fr.quentinmachu.infernalmaze.ui.math.Vector3f;
-import fr.quentinmachu.infernalmaze.ui.math.Vector4f;
 import fr.quentinmachu.infernalmaze.ui.state.GameState;
 
 public class BallObject implements GameObject {   
@@ -18,7 +17,8 @@ public class BallObject implements GameObject {
 	public static final float SPHERE_RADIUS = 0.30f;	
 	public static final float GRAVITY = 15f;
 	public static final float COLLISION_VELOCITY_DIVIDER = 3f;
-	
+	public static final Material material = new Material(new Vector3f(0.2f, 0.2f, 0.2f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(2.0f, 2.0f, 2.0f), 5f);
+
 	private GameState gameState;
 	
 	private Renderer renderer; //TODO Dispose me
@@ -31,10 +31,9 @@ public class BallObject implements GameObject {
 	public BallObject(GameState gameState) {
 		this.gameState = gameState;
 		
-		renderer = new Renderer(gameState.getCamera(), true);
-		renderer.init();
-		renderer.setPrimitive(GL11.GL_TRIANGLE_STRIP);
 		texture = Texture.loadTexture("resources/earth.png", true);
+		renderer = new Renderer(gameState.getCamera(), texture, gameState.getMainLight(), material, gameState.getAmbient(), true);
+		renderer.setPrimitive(GL11.GL_TRIANGLE_STRIP);
 		
 		position = new Vector3f();
 		velocity = new Vector3f();
@@ -66,8 +65,6 @@ public class BallObject implements GameObject {
         Vector3f up = new Vector3f(0, 0, 1);
         Vector3f vel = velocity.normalize();
         Vector3f axis = vel.cross(up);
-                
-        // Rotation de frame
         if(axis.x != 0 || axis.y != 0 || axis.z != 0) {
         	float angle = (velocity.length() * delta) / SPHERE_RADIUS;
         	
@@ -193,8 +190,13 @@ public class BallObject implements GameObject {
     			cos = (float) Math.cos(angleB * Math.PI / 180.0);
     			sin = -(float) Math.sin(angleB * Math.PI / 180.0);
 
-    			renderer.addVertex(r2*cos, h2, r2*sin, ((-r2*sin/Math.abs(r2*cos)) + 1)/2, ((-h2/Math.abs(r2*cos)) + 1)/2);
-    			renderer.addVertex(r1*cos, h1, r1*sin, ((-r1*sin/Math.abs(r1*cos)) + 1)/2, ((-h1/Math.abs(r1*cos)) + 1)/2);
+    			Vector3f p1 = new Vector3f(r2*cos, h2, r2*sin);
+    			Vector3f p2 = new Vector3f(r1*cos, h1, r1*sin);
+    			Vector3f n1 = p1.normalize();
+    			Vector3f n2 = p2.normalize();
+    			
+    			renderer.addVertex(p1.x, p1.y, p1.z, ((-r2*sin/Math.abs(r2*cos)) + 1)/2, ((-h2/Math.abs(r2*cos)) + 1)/2, n1.x, n1.y, n1.z);
+    			renderer.addVertex(p2.x, p2.y, p2.z, ((-r1*sin/Math.abs(r1*cos)) + 1)/2, ((-h1/Math.abs(r1*cos)) + 1)/2, n2.x, n2.y, n2.z);
     		}
     	}
        	

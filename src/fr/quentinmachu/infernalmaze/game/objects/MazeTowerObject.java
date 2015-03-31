@@ -1,9 +1,6 @@
 package fr.quentinmachu.infernalmaze.game.objects;
 
-import org.lwjgl.opengl.GL11;
-
 import fr.quentinmachu.infernalmaze.maze.MazeTower;
-import fr.quentinmachu.infernalmaze.ui.Camera;
 import fr.quentinmachu.infernalmaze.ui.state.GameState;
 
 public class MazeTowerObject implements GameObject {

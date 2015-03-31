@@ -5,10 +5,10 @@ import org.lwjgl.opengl.*;
 
 import fr.quentinmachu.infernalmaze.game.controllers.InputController;
 import fr.quentinmachu.infernalmaze.game.controllers.MouseController;
-import fr.quentinmachu.infernalmaze.ui.Renderer;
 import fr.quentinmachu.infernalmaze.ui.Timer;
+import fr.quentinmachu.infernalmaze.ui.math.Matrix4f;
+import fr.quentinmachu.infernalmaze.ui.math.Vector3f;
 import fr.quentinmachu.infernalmaze.ui.state.GameState;
-import fr.quentinmachu.infernalmaze.ui.state.State;
 import fr.quentinmachu.infernalmaze.ui.state.StateMachine;
 
 import java.nio.ByteBuffer;

@@ -23,11 +23,14 @@
  */
 package fr.quentinmachu.infernalmaze.ui;
 
-import java.awt.Color;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
+
+import fr.quentinmachu.infernalmaze.ui.math.Matrix3f;
 import fr.quentinmachu.infernalmaze.ui.math.Matrix4f;
 import fr.quentinmachu.infernalmaze.ui.math.Vector3f;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
@@ -54,7 +57,11 @@ public class Renderer {
     private boolean useCubeMap;
     
     private Camera camera;
+    private Texture texture;
     private Matrix4f model;
+    private ArrayList<Light> lights;
+    private Material material;
+    private Vector3f ambient;
     
     private VertexArrayObject vao;
     private VertexBufferObject vbo;
@@ -68,13 +75,23 @@ public class Renderer {
 
     private int primitive = GL_TRIANGLES;
     
-    public Renderer(Camera camera) {
-    	this(camera, false);
+    public Renderer(Camera camera, Texture texture, Light mainLight, Material material, Vector3f ambient) {
+    	this(camera, texture, mainLight, material, ambient, false);
     }
     
-    public Renderer(Camera camera, boolean useCubeMap) {
+    public Renderer(Camera camera, Texture texture, Light mainLight, Material material, Vector3f ambient, boolean useCubeMap) {
     	this.camera = camera;
+    	this.texture = texture;
     	this.useCubeMap = useCubeMap;
+    	this.material = material;
+    	this.ambient = ambient;
+    	
+    	lights = new ArrayList<Light>();
+    	lights.add(mainLight);
+    	
+    	model = new Matrix4f();
+    	
+    	init();
     }
     
     /**
@@ -121,9 +138,8 @@ public class Renderer {
         /* Specify Vertex Pointers */
         specifyVertexAttributes();
 
-        /* Set texture uniform */
-        int uniTex = program.getUniformLocation("texImage");
-        program.setUniform(uniTex, 0);
+        /* Set texture */
+        program.setUniform(program.getUniformLocation("texImage"), 0);
         
         /* Enable blending */
         glEnable(GL_BLEND);
@@ -140,9 +156,11 @@ public class Renderer {
         if (drawing) {
             throw new IllegalStateException("Renderer is already drawing!");
         }
+
+        texture.bind();
+        
         drawing = true;
         numVertices = 0;
-        model = new Matrix4f();
     }
 
     /**
@@ -182,18 +200,41 @@ public class Renderer {
             program.use();
             
             /* Set model matrix */
-            int uniModel = program.getUniformLocation("model");
-            program.setUniform(uniModel, model);
+            program.setUniform(program.getUniformLocation("model"), model);
+            program.setUniform(program.getUniformLocation("model_3x3_inv_transp"), new Matrix3f(model).invert().transpose());
             
             /* Set projection matrix to perspective matrix */
-	        Matrix4f projection = Matrix4f.perspective(camera.getFov(), (float) width/height, camera.getNear(), camera.getFar());
-            int uniProjection = program.getUniformLocation("projection");
-            program.setUniform(uniProjection, Matrix4f.scale(-1, 1, 1).multiply(projection));
+            program.setUniform(program.getUniformLocation("projection"), Matrix4f.scale(-1, 1, 1).multiply(Matrix4f.perspective(camera.getFov(), (float) width/height, camera.getNear(), camera.getFar())));
 
             /* Set view matrix to camera */
             Matrix4f view = Matrix4f.lookAt(camera.getEye(), camera.getCenter(), camera.getUp());
-            int uniView = program.getUniformLocation("view");
-            program.setUniform(uniView, view);
+            program.setUniform(program.getUniformLocation("view"),  view);
+            program.setUniform(program.getUniformLocation("view_inv"), view.invert());
+            
+            /* Set the material */
+            program.setUniform(program.getUniformLocation("material.ambient"), material.getAmbient());
+            program.setUniform(program.getUniformLocation("material.diffuse"), material.getDiffuse());
+            program.setUniform(program.getUniformLocation("material.specular"), material.getSpecular());
+            program.setUniform(program.getUniformLocation("material.shininess"), material.getShininess());
+        	
+            /* Set the ambient */
+            program.setUniform(program.getUniformLocation("ambient"), ambient);
+            
+            /* Set the lights */
+            program.setUniform(program.getUniformLocation("lightsCount"), lights.size());
+            for(int i = 0; i < lights.size(); i++) {
+            	program.setUniform(program.getUniformLocation("lights["+i+"].position"), lights.get(i).getPosition());
+            	program.setUniform(program.getUniformLocation("lights["+i+"].diffuse"), lights.get(i).getDiffuse());
+            	program.setUniform(program.getUniformLocation("lights["+i+"].specular"), lights.get(i).getSpecular());
+            	
+            	program.setUniform(program.getUniformLocation("lights["+i+"].constantAttenuation"), lights.get(i).getConstantAttenuation());
+            	program.setUniform(program.getUniformLocation("lights["+i+"].linearAttenuation"), lights.get(i).getLinearAttenuation());
+            	program.setUniform(program.getUniformLocation("lights["+i+"].quadraticAttenuation"), lights.get(i).getQuadraticAttenuation());
+            	
+            	program.setUniform(program.getUniformLocation("lights["+i+"].spotCutoff"), lights.get(i).getSpotCutoff());
+            	program.setUniform(program.getUniformLocation("lights["+i+"].spotExponent"), lights.get(i).getSpotExponent());
+            	program.setUniform(program.getUniformLocation("lights["+i+"].spotDirection"), lights.get(i).getSpotDirection());
+            }
             
             /* Upload the new vertex data */
             vbo.bind(GL_ARRAY_BUFFER);
@@ -219,48 +260,57 @@ public class Renderer {
             flush();
     	}
     }
-  
-    /**
-     * Draw a vertex with the currently bound texture on specified
-     * coordinates.
-     *
-     * @param x x position
-     * @param y y position
-     * @param z z position
-     * @param s coordinate
-     * @param t coordinate
-     */
-    public void addVertex(float x, float y, float z, float s, float t) {        
-        addVertex(x, y, z, s, t, Color.WHITE);
-    }
     
     /**
-     * Draw a vertex with the currently bound texture on specified
+     * Draws a vertex with the currently bound texture on specified
      * coordinates.
      *
      * @param x x position
      * @param y y position
      * @param z z position
+     * @param nx x normal
+     * @param ny y normal
+     * @param nz z normal
      * @param s coordinate
      * @param t coordinate
      * @param c The color to use
      */
-    public void addVertex(float x, float y, float z, float s, float t, Color c) {
-    	Vector3f normal = new Vector3f(x, y, z).normalize();
-    	vertices.put(x).put(y).put(z).put(c.getRed() / 255f).put(c.getGreen() / 255f).put(c.getBlue() / 255f).put(s).put(t).put(normal.x).put(normal.y).put(normal.z);
+    public void addVertex(float x, float y, float z, float s, float t, float nx, float ny, float nz) {
+    	vertices.put(x).put(y).put(z).put(s).put(t).put(nx).put(ny).put(nz);
         numVertices++;
     }
     
+    /**
+     * Draws a surface. The points are defined clockwise.
+     * @param x1
+     * @param y1
+     * @param z1
+     * @param x2
+     * @param y2
+     * @param z2
+     * @param x3
+     * @param y3
+     * @param z3
+     * @param x4
+     * @param y4
+     * @param z4
+     */
 	public void drawSurface(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4) {
 		reserveVertices(6);
+
+		Vector3f u1 = new Vector3f(x3-x1, y3-y1, z3-z1);
+		Vector3f v1 = new Vector3f(x4-x1, y4-y1, z4-z1);
+		Vector3f n1 = new Vector3f(u1.x*v1.z - u1.z*v1.y, u1.z*v1.x - u1.x*v1.z, u1.x*v1.y - u1.y*v1.x);
+		addVertex(x1, y1, z1, 0, 0, n1.x, n1.y, n1.z);
+		addVertex(x3, y3, z3, 1, 1, n1.x, n1.y, n1.z);
+		addVertex(x4, y4, z4, 0, 1, n1.x, n1.y, n1.z);
 		
-		addVertex(x1, y1, z1, 0, 0);
-		addVertex(x2, y2, z2, 1, 0);
-		addVertex(x3, y3, z3, 0, 1);
-		
-		addVertex(x2, y2, z2, 1, 0);
-		addVertex(x3, y3, z3, 0, 1);
-		addVertex(x4, y4, z4, 1, 1);
+		Vector3f u2 = new Vector3f(x2-x1, y2-y1, z2-z1);
+		Vector3f v2 = new Vector3f(x3-x1, y3-y1, z3-z1);
+		Vector3f n2 = new Vector3f(u2.x*v2.z - u2.z*v2.y, u2.z*v2.x - u2.x*v2.z, u2.x*v2.y - u2.y*v2.x);
+		addVertex(x1, y1, z1, 0, 0, n2.x, n2.y, n2.z);
+		addVertex(x2, y2, z2, 1, 0, n2.x, n2.y, n2.z);
+		addVertex(x3, y3, z3, 1, 1, n2.x, n2.y, n2.z);
 	}
 
     /**
@@ -281,24 +331,19 @@ public class Renderer {
      */
     private void specifyVertexAttributes() {
         /* Specify Vertex Pointer */
-        int posAttrib = program.getAttributeLocation("position");
+        int posAttrib = program.getAttributeLocation("in_position");
         program.enableVertexAttribute(posAttrib);
-        program.pointVertexAttribute(posAttrib, 3, 11 * Float.BYTES, 0);
-
-        /* Specify Color Pointer */
-        int colAttrib = program.getAttributeLocation("color");
-        program.enableVertexAttribute(colAttrib);
-        program.pointVertexAttribute(colAttrib, 3, 11 * Float.BYTES, 3 * Float.BYTES);
+        program.pointVertexAttribute(posAttrib, 3, 8 * Float.BYTES, 0);
 
         /* Specify Texture Pointer */
-        int texAttrib = program.getAttributeLocation("texcoord");
+        int texAttrib = program.getAttributeLocation("in_texcoord");
         program.enableVertexAttribute(texAttrib);
-        program.pointVertexAttribute(texAttrib, 2, 11 * Float.BYTES, 6 * Float.BYTES);
+        program.pointVertexAttribute(texAttrib, 2, 8 * Float.BYTES, 3 * Float.BYTES);
         
         /* Specify Normal Pointer */
-        int normalAttrib = program.getAttributeLocation("normal");
+        int normalAttrib = program.getAttributeLocation("in_normal");
         program.enableVertexAttribute(normalAttrib);
-        program.pointVertexAttribute(normalAttrib, 3, 11 * Float.BYTES, 8 * Float.BYTES);
+        program.pointVertexAttribute(normalAttrib, 3, 8 * Float.BYTES, 5 * Float.BYTES);
     }
 
 	/**
@@ -317,5 +362,12 @@ public class Renderer {
 	 */
 	public void setPrimitive(int primitive) {
 		this.primitive = primitive;
+	}
+
+	/**
+	 * @return the lights
+	 */
+	public ArrayList<Light> getLights() {
+		return lights;
 	}
 }

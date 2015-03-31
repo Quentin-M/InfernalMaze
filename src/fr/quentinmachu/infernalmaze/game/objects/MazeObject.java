@@ -1,33 +1,12 @@
 package fr.quentinmachu.infernalmaze.game.objects;
 
-import static org.lwjgl.opengl.GL11.GL_QUADS;
-import static org.lwjgl.opengl.GL11.glBegin;
-import static org.lwjgl.opengl.GL11.glColor3f;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glRotatef;
-import static org.lwjgl.opengl.GL11.glVertex3d;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glTexCoord2f; 
-
-import java.awt.Color;
-import java.awt.Point;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
-
-import fr.quentinmachu.infernalmaze.game.Game;
 import fr.quentinmachu.infernalmaze.maze.Direction;
 import fr.quentinmachu.infernalmaze.maze.Maze;
-import fr.quentinmachu.infernalmaze.ui.Camera;
+import fr.quentinmachu.infernalmaze.ui.Material;
 import fr.quentinmachu.infernalmaze.ui.Renderer;
 import fr.quentinmachu.infernalmaze.ui.Texture;
 import fr.quentinmachu.infernalmaze.ui.math.Matrix4f;
 import fr.quentinmachu.infernalmaze.ui.math.Vector3f;
-import fr.quentinmachu.infernalmaze.ui.math.Vector4f;
 import fr.quentinmachu.infernalmaze.ui.state.GameState;
 
 public class MazeObject implements GameObject {
@@ -43,8 +22,10 @@ public class MazeObject implements GameObject {
 	
 	private Renderer floorRenderer; //TODO Dispose me
 	private Texture floorTexture; //TODO Delete me
+	public static final Material floorMaterial = new Material(new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.33f, 0.33f, 0.33f), 0.75f);
 	private Renderer wallRenderer; //TODO Dispose me
 	private Texture wallTexture; //TODO Delete me
+	public static final Material wallMaterial = new Material(new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.33f, 0.33f, 0.33f), 0.75f);
 	
 	public MazeObject(GameState gameState, Maze maze) {
 		this.gameState = gameState;
@@ -52,13 +33,11 @@ public class MazeObject implements GameObject {
 		setRx(0);
 		setRy(0);
 		
-		floorRenderer = new Renderer(gameState.getCamera());
-		floorRenderer.init();
 		floorTexture = Texture.loadTexture("resources/floor.png");
+		floorRenderer = new Renderer(gameState.getCamera(), floorTexture, gameState.getMainLight(), floorMaterial, gameState.getAmbient());
 		
-		wallRenderer = new Renderer(gameState.getCamera());
-		wallRenderer.init();
 		wallTexture = Texture.loadTexture("resources/wall.jpg");
+		wallRenderer = new Renderer(gameState.getCamera(), wallTexture, gameState.getMainLight(), wallMaterial, gameState.getAmbient());
 	}
 
 
@@ -94,24 +73,12 @@ public class MazeObject implements GameObject {
      	
         // Floor
         floorRenderer.begin();
-        floorTexture.bind();
         floorRenderer.setModel(model);
-        
-        floorRenderer.reserveVertices(6);
-
-        floorRenderer.addVertex(0, 0, 0, 0, 0);
-        floorRenderer.addVertex(maze.getWidth(), maze.getHeight(), 0, 1, 1);
-        floorRenderer.addVertex(0, maze.getHeight(), 0, 0, 1);
-        
-        floorRenderer.addVertex(0, 0, 0, 0, 0);
-        floorRenderer.addVertex(maze.getWidth(), maze.getHeight(), 0, 1, 1);
-        floorRenderer.addVertex(maze.getWidth(), 0, 0, 1, 0);
-                
+        floorRenderer.drawSurface(0, 0, 0, maze.getWidth(), 0, 0, maze.getWidth(), maze.getHeight(), 0, 0, maze.getHeight(), 0);   
         floorRenderer.end();
         
         // Walls
         wallRenderer.begin();
-        wallTexture.bind();
         wallRenderer.setModel(model);
                 
         for(int y = 0; y < maze.getHeight(); y++) {
@@ -146,45 +113,40 @@ public class MazeObject implements GameObject {
 	}
 	
 	private void drawWall(int x, int y, int z, Direction d) {
-		int x2, y2;
-		float dx, dy;
+		float thickness = (float) (WALL_THICKNESS / 2);
 		
 		switch(d) {
 			case NORTH:
-				x2 = x + 1;
-				y2 = y;
-				dx = 0;
-				dy = (float) (WALL_THICKNESS / 2);
+				wallRenderer.drawSurface(x, y+thickness, 0f, x, y+thickness, WALL_HEIGHT, x+1, y+thickness, WALL_HEIGHT, x+1, y+thickness, 0f);
+				wallRenderer.drawSurface(x, y-thickness, 0f, x, y-thickness, WALL_HEIGHT, x+1, y-thickness, WALL_HEIGHT, x+1, y-thickness, 0f);
+				wallRenderer.drawSurface(x, y+thickness, WALL_HEIGHT, x, y-thickness, WALL_HEIGHT, x+1, y-thickness, WALL_HEIGHT, x+1, y+thickness, WALL_HEIGHT); // Roof
+				wallRenderer.drawSurface(x, y+thickness, 0f, x, y+thickness, WALL_HEIGHT, x, y-thickness, WALL_HEIGHT, x, y-thickness, 0f); // Side 1
+				wallRenderer.drawSurface(x+1, y+thickness, 0f, x+1, y+thickness, WALL_HEIGHT, x+1, y-thickness, WALL_HEIGHT, x+1, y-thickness, 0f); // Side 2*/
 				break;
 			case SOUTH:
-				y = y + 1;
-				x2 = x + 1;
-				y2 = y;
-				dx = 0;
-				dy = (float) (WALL_THICKNESS / 2);
+				wallRenderer.drawSurface(x, y+1+thickness, 0f, x, y+1+thickness, WALL_HEIGHT, x+1, y+1+thickness, WALL_HEIGHT, x+1, y+1+thickness, 0f);
+				wallRenderer.drawSurface(x, y+1-thickness, 0f, x, y+1-thickness, WALL_HEIGHT, x+1, y+1-thickness, WALL_HEIGHT, x+1, y+1-thickness, 0f);
+				wallRenderer.drawSurface(x, y+1+thickness, WALL_HEIGHT, x, y+1-thickness, WALL_HEIGHT, x+1, y+1-thickness, WALL_HEIGHT, x+1, y+1+thickness, WALL_HEIGHT); // Roof
+				wallRenderer.drawSurface(x, y+1-thickness, 0f, x, y+1-thickness, WALL_HEIGHT, x, y+1+thickness, WALL_HEIGHT, x, y+1+thickness, 0f); // Side 1
+				wallRenderer.drawSurface(x+1, y+1+thickness, 0f, x+1, y+1+thickness, WALL_HEIGHT, x+1, y+1-thickness, WALL_HEIGHT, x+1, y+1-thickness, 0f); // Side 2*/
 				break;
 			case WEST:
-				x2 = x;
-				y2 = y + 1;
-				dx = (float) (WALL_THICKNESS / 2);
-				dy = 0;
+				wallRenderer.drawSurface(x+thickness, y+1, WALL_HEIGHT, x+thickness, y, WALL_HEIGHT, x+thickness, y, 0f, x+thickness, y+1, 0f);
+				wallRenderer.drawSurface(x-thickness, y, 0f, x-thickness, y, WALL_HEIGHT, x-thickness, y+1, WALL_HEIGHT, x-thickness, y+1, 0f);
+				wallRenderer.drawSurface(x-thickness, y, WALL_HEIGHT, x+thickness, y, WALL_HEIGHT, x+thickness, y+1, WALL_HEIGHT, x-thickness, y+1, WALL_HEIGHT); // Roof
+				wallRenderer.drawSurface(x+thickness, y, 0f, x+thickness, y, WALL_HEIGHT, x-thickness, y, WALL_HEIGHT, x-thickness, y, 0f); // Side 1
+				wallRenderer.drawSurface(x-thickness, y+1, 0f, x-thickness, y+1, WALL_HEIGHT, x+thickness, y+1, WALL_HEIGHT, x+thickness, y+1, 0f); // Side 2*/
 				break;
 			case EAST:
-				x = x + 1;
-				x2 = x;
-				y2 = y + 1;
-				dx = (float) (WALL_THICKNESS / 2);
-				dy = 0;
+				wallRenderer.drawSurface(x+1+thickness, y+1, 0f, x+1+thickness, y+1, WALL_HEIGHT, x+1+thickness, y, WALL_HEIGHT, x+1+thickness, y, 0f);
+				wallRenderer.drawSurface(x+1-thickness, y, 0f, x+1-thickness, y, WALL_HEIGHT, x+1-thickness, y+1, WALL_HEIGHT, x+1-thickness, y+1, 0f);
+				wallRenderer.drawSurface(x+1-thickness, y, WALL_HEIGHT, x+1+thickness, y, WALL_HEIGHT, x+1+thickness, y+1, WALL_HEIGHT, x+1-thickness, y+1, WALL_HEIGHT); // Roof
+				wallRenderer.drawSurface(x+1+thickness, y, 0f, x+1+thickness, y, WALL_HEIGHT, x+1-thickness, y, WALL_HEIGHT, x+1-thickness, y, 0f); // Side 1
+				wallRenderer.drawSurface(x+1-thickness, y+1, 0f, x+1-thickness, y+1, WALL_HEIGHT, x+1+thickness, y+1, WALL_HEIGHT, x+1+thickness, y+1, 0f); // Side 2*/
 				break;
 			default:
 				throw new IllegalArgumentException("Unsupported direction");
 		}
-		
-		wallRenderer.drawSurface(x+dx, y+dy, 0f, x2+dx, y2+dy, 0f, x+dx, y+dy, WALL_HEIGHT, x2+dx, y2+dy, WALL_HEIGHT);
-		wallRenderer.drawSurface(x-dx, y-dy, 0f, x2-dx, y2-dy, 0f, x-dx, y-dy, WALL_HEIGHT, x2-dx, y2-dy, WALL_HEIGHT);
-		wallRenderer.drawSurface(x+dx, y+dy, WALL_HEIGHT, x2+dx, y2+dy, WALL_HEIGHT, x-dx, y-dy, WALL_HEIGHT, x2-dx, y2-dy, WALL_HEIGHT); // Roof
-		wallRenderer.drawSurface(x+dx, y+dy, 0f, x-dx, y-dy, 0f, x+dx, y+dy, WALL_HEIGHT, x-dx, y-dy, WALL_HEIGHT); // Side 1
-		wallRenderer.drawSurface(x2+dx, y2+dy, 0f, x2-dx, y2-dy, 0f, x2+dx, y2+dy, WALL_HEIGHT, x2-dx, y2-dy, WALL_HEIGHT); // Side 2
 	}
 	
 	/**

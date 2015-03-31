@@ -349,7 +349,7 @@ public class Matrix4f {
 	}
 	
     /**
-     * Returns the Buffer representation of this vector.
+     * Returns the Buffer representation of this Matrix.
      *
      * @return Vector as FloatBuffer
      */

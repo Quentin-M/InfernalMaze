@@ -23,14 +23,7 @@
  */
 package fr.quentinmachu.infernalmaze.ui.state;
 
-import java.awt.Color;
 import java.awt.Point;
-import java.awt.Toolkit;
-import java.nio.IntBuffer;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
-
 import fr.quentinmachu.infernalmaze.game.Game;
 import fr.quentinmachu.infernalmaze.game.controllers.InputController;
 import fr.quentinmachu.infernalmaze.game.objects.BallObject;
@@ -38,13 +31,12 @@ import fr.quentinmachu.infernalmaze.game.objects.MazeObject;
 import fr.quentinmachu.infernalmaze.game.objects.MazeTowerObject;
 import fr.quentinmachu.infernalmaze.maze.MazeTower;
 import fr.quentinmachu.infernalmaze.ui.Camera;
-import fr.quentinmachu.infernalmaze.ui.Renderer;
-import fr.quentinmachu.infernalmaze.ui.Texture;
+import fr.quentinmachu.infernalmaze.ui.Light;
 import fr.quentinmachu.infernalmaze.ui.math.Vector3f;
+import fr.quentinmachu.infernalmaze.ui.math.Vector4f;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class GameState implements State {
     private Game game;
@@ -58,6 +50,10 @@ public class GameState implements State {
     public static final float FAR = 100;
     private Camera camera;
     
+    // Lighting
+    private Light mainLight;
+    private Vector3f ambient;
+
     // Game objects
     private BallObject ball;
     private MazeTowerObject mazeTower;
@@ -70,7 +66,18 @@ public class GameState implements State {
     }
 
     @Override
-    public void enter() {   	
+    public void enter() {
+    	// Initialize light
+    	mainLight = new Light(
+			new Vector4f(0.0f, MAZE_SIZE, 10.0f, 1.0f),
+			new Vector4f(1.0f, 1.0f, 1.0f, 0.0f),
+			new Vector4f(1.0f, 1.0f, 1.0f, 0.0f),
+			0.8f, 0.0f, 0.0f,
+			180.0f, 0.0f,
+			new Vector3f(5.0f, 5.0f, 0.0f)
+    	);
+    	ambient = new Vector3f(0.1f, 0.1f, 0.1f);
+    	
     	// Initialize camera
     	camera = new Camera(new Vector3f(MAZE_SIZE/2, MAZE_SIZE*1.5f, 20), new Vector3f(MAZE_SIZE/2, MAZE_SIZE/2, 0), new Vector3f(0, 0, 1), FOV, NEAR, FAR);
     	
@@ -93,25 +100,19 @@ public class GameState implements State {
     public void update() {
         // Update position
         ball.update();
-
-        // Check for collision
-        /*player.checkCollision(gameHeight);
-        ball.collidesWith(player);
-        opponent.checkCollision(gameHeight);
-        ball.collidesWith(opponent);*/
     }
 
     @Override
     public void render(float alpha) {   	
     	// Clear drawing area 
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    	
         // Draw game objects 
         ball.render(alpha);
         mazeTower.render(alpha);
     }
 
-    @Override
+	@Override
     public void exit() {
         //texture.delete();
     }
@@ -124,11 +125,16 @@ public class GameState implements State {
     	return game.getInput();
     }
 
-	/**
-	 * @return the ball
-	 */
 	public BallObject getBall() {
 		return ball;
+	}
+	
+	public Light getMainLight() {
+		return mainLight;
+	}
+	
+	public Vector3f getAmbient() {
+		return ambient;
 	}
 	
 	public MazeObject getCurrentMazeObject() {

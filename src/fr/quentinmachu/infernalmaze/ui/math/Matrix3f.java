@@ -69,6 +69,25 @@ public class Matrix3f {
     }
 
     /**
+     * Creates a 3x3 matrix from a 4x4 matrix (extracts the upper left 3x3 matrix)
+     * 
+     * @param matrix Matrix with values
+     */
+    public Matrix3f(Matrix4f matrix) {
+    	m00 = matrix.m00;
+    	m10 = matrix.m10;
+    	m20 = matrix.m20;
+    	
+    	m01 = matrix.m01;
+    	m11 = matrix.m11;
+    	m21 = matrix.m21;
+    	
+    	m02 = matrix.m02;
+    	m12 = matrix.m12;
+    	m22 = matrix.m22;
+    }
+    
+    /**
      * Sets this matrix to the identity matrix.
      */
     public final void setIdentity() {
