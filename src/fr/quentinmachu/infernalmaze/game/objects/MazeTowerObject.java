@@ -1,18 +1,18 @@
 package fr.quentinmachu.infernalmaze.game.objects;
 
+import fr.quentinmachu.infernalmaze.game.MazeGame;
 import fr.quentinmachu.infernalmaze.maze.MazeTower;
-import fr.quentinmachu.infernalmaze.ui.state.GameState;
 
 public class MazeTowerObject implements GameObject {
 	private MazeTower mazeTower;
 	private MazeObject[] mazeObjects;
 	
-	public MazeTowerObject(GameState gameState, MazeTower mazeTower) {
+	public MazeTowerObject(MazeGame gameState, MazeTower mazeTower) {
 		this.mazeTower = mazeTower;
 		
 		mazeObjects = new MazeObject[mazeTower.getDepth()];
 		for(int i = 0; i<mazeObjects.length; i++) {
-			mazeObjects[i] = new MazeObject(gameState, mazeTower.getMazes()[i]);
+			mazeObjects[i] = new MazeObject(gameState, mazeTower.getMazes()[i], i);
 		}
 	}
 	
@@ -25,16 +25,8 @@ public class MazeTowerObject implements GameObject {
 
 	@Override
 	public void render(float alpha) {
-		/*for(int i = 0; i<mazeObjects.length; i++) {
-			mazeObjects[i].render(alpha);
-		}*/
-		mazeObjects[0].render(alpha);
-	}
-
-	@Override
-	public void input() {
 		for(int i = 0; i<mazeObjects.length; i++) {
-			mazeObjects[i].input();
+			mazeObjects[i].render(alpha);
 		}
 	}
 

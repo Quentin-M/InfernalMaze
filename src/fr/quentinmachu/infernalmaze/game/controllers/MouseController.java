@@ -1,13 +1,17 @@
 package fr.quentinmachu.infernalmaze.game.controllers;
 
-import static org.lwjgl.glfw.GLFW.*;
-
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
+import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 
 import fr.quentinmachu.infernalmaze.game.Game;
 
 public class MouseController extends InputController {
-	public static float sensitivity = 0.1f;
+	// Constants
+	public static final float SENSITIVITY = 0.1f;
+	public static final float MAX_ROTATION = 20f;
 	
 	// Internal variables
 	private GLFWCursorPosCallback cursorPosCallback;
@@ -20,14 +24,16 @@ public class MouseController extends InputController {
 	
 	@Override
 	public void init() {
-		// Initialize values
+    	// Disable mouse
+    	glfwSetInputMode(game.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    	
+    	// Initialize values
 		x = 0;
 		y = 0;
 		dx = 0;
 		dy = 0;
-		
-		// Disable mouse
-		glfwSetInputMode(game.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+		//TODO Add missing axis / buttons
 		
 		// Set callback
         glfwSetCursorPosCallback(game.getWindow(), cursorPosCallback = new GLFWCursorPosCallback(){
@@ -45,9 +51,15 @@ public class MouseController extends InputController {
 	}
 
 	@Override
-	public void input() {
-		rx = dy*sensitivity;
-		ry = dx*sensitivity;
+	public void poll() {
+		if(ry-dx*SENSITIVITY>MAX_ROTATION) ry = MAX_ROTATION;
+		else if(ry-dx*SENSITIVITY<-MAX_ROTATION) ry = -MAX_ROTATION;
+		else ry += - dx*SENSITIVITY;
+		
+		if(rx+dy*SENSITIVITY>MAX_ROTATION) rx = MAX_ROTATION;
+		else if(rx+dy*SENSITIVITY<-MAX_ROTATION) rx = -MAX_ROTATION;
+		else rx += dy*SENSITIVITY;
+		
 		dx = 0;
 		dy = 0;
 	}

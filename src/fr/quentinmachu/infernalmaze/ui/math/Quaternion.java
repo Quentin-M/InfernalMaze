@@ -20,6 +20,16 @@ public class Quaternion extends Vector4f {
 	}
 
 	/**
+	 * Creates a quaternion with specified rotation around axis
+	 * 
+	 * @param axis the axis-angle: (x,y,z) is the axis
+	 * @param angle the angle of the rotation
+	 */
+	public Quaternion(Vector3f axis, float angle) {
+		setFromAxisAngle(axis, angle);
+	}
+	
+	/**
 	 * Set this quaternion to the multiplication identity.
 	 * 
 	 * @return this

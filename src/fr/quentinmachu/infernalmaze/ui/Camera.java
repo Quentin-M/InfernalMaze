@@ -10,14 +10,14 @@ public class Camera {
 	private Vector3f eye;
 	private Vector3f center;
 	private Vector3f up;
-
+	
 	public Camera(Vector3f eye, Vector3f center, Vector3f up, float fov, float near, float far) {
-		this.fov = fov;
-		this.near = near;
-		this.far = far;
 		this.eye = eye;
 		this.center = center;
 		this.up = up;
+		this.fov = fov;
+		this.near = near;
+		this.far = far;
 	}
 
 	/**

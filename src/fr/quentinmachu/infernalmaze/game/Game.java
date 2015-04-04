@@ -4,13 +4,7 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
 import fr.quentinmachu.infernalmaze.game.controllers.InputController;
-import fr.quentinmachu.infernalmaze.game.controllers.MouseController;
 import fr.quentinmachu.infernalmaze.ui.Timer;
-import fr.quentinmachu.infernalmaze.ui.math.Matrix4f;
-import fr.quentinmachu.infernalmaze.ui.math.Vector3f;
-import fr.quentinmachu.infernalmaze.ui.state.GameState;
-import fr.quentinmachu.infernalmaze.ui.state.StateMachine;
-
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,42 +14,38 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-public class Game {
+public abstract class Game {
 	// Constants
-	private static String WINDOW_NAME = "Infernal Maze";
-	
-	public final static float CAMERA_ZOOM_RATIO = 1.5f;
-	public final static float CAMERA_ANGLE = 30f;
-	public final static float MAZE_MAX_INCLINATION = 20f;
-	
-	public static int WIDTH = 800;
-	public static int HEIGHT = 600;
-	public static final int TARGET_FPS = 60;
-    public static final int TARGET_UPS = 30;
+	public static int TARGET_FPS = 60;
+    public static int TARGET_UPS = 30;
     
-    protected Timer timer;
-    protected InputController input;
-    protected StateMachine state;
+    // Variables
+    private String windowName;
+	private int windowWidth;
+	private int windowHeight;
+	private String inputControllerName;
+	private InputController inputController;
     
+	// Internal variables
+    private Timer timer;
 	private GLFWErrorCallback errorCallback;
     private long window;
 	
-    public Game(String inputController) {
-    	timer = new Timer();
-    	state = new StateMachine();
-    	
-		if(inputController.equalsIgnoreCase("Mouse")) input = new MouseController(this);
-		else throw new IllegalArgumentException();
+    public Game(String windowName, int windowWidth, int windowHeight, String inputControllerName) {
+    	this.windowName = windowName;
+    	this.windowWidth = windowWidth;
+    	this.windowHeight = windowHeight;
+    	this.inputControllerName = inputControllerName;
     }
     
     public void run() {
-        init();
-        loop();
-        dispose();
+        _init();
+        _loop();
+        _dispose();
     }
  
-    private void init() {
-        glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
+    private void _init() {    	
+    	glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
         if(glfwInit() != GL11.GL_TRUE) throw new IllegalStateException("Unable to initialize GLFW");
  
         // Configure our window
@@ -67,40 +57,40 @@ public class Game {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
  
         // Create the window
-        window = glfwCreateWindow(WIDTH, HEIGHT, WINDOW_NAME, NULL, NULL);
+        window = glfwCreateWindow(windowWidth, windowHeight, windowName, NULL, NULL);
         if(window == NULL) throw new RuntimeException("Failed to create the GLFW window");
         
         // Center our window
         ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwSetWindowPos(window, (GLFWvidmode.width(vidmode) - WIDTH) / 2, (GLFWvidmode.height(vidmode) - HEIGHT) / 2);
+        glfwSetWindowPos(window, (GLFWvidmode.width(vidmode) - windowWidth) / 2, (GLFWvidmode.height(vidmode) - windowHeight) / 2);
 
         glfwMakeContextCurrent(window); // Make the OpenGL context current
         GLContext.createFromCurrent(); // Create context  
         
         glfwSwapInterval(1); // Enable v-sync
         
-        timer.init(); // Initialize timer
-        input.init(); // Initialize input
-        initStates(); // Initialize the states
+    	// Initialize timer
+    	timer = new Timer();
+    	timer.init(); 
+    	
+    	// Initialize input
+    	try {
+        	inputController = (InputController) Class.forName("fr.quentinmachu.infernalmaze.game.controllers."+inputControllerName).getConstructor(Game.class).newInstance(this);
+    	} catch(Exception e) {
+    		throw new IllegalArgumentException(inputControllerName + " is not a supported controller.");
+    	}
+    	inputController.init();
+    	
+    	// Initialize the game
+    	init();
     }
- 
-    /**
-     * Initializes the states.
-     */
-    private void initStates() {
-    	state.add("game", new GameState(this));
-        state.change("game");
-	}
 
 	/**
      * Releases resources that where used by the game.
      */
-    private void dispose() {
-        // Set empty state to trigger the exit method in the current state
-        state.change(null);
-        
+    private void _dispose() {
         // Dispose input
-        input.dispose();
+        inputController.dispose();
         
         // Release window
         glfwDestroyWindow(window);
@@ -108,6 +98,47 @@ public class Game {
         // Terminate GLFW and release the error callback
         glfwTerminate();
         errorCallback.release();
+        
+        // Dispose the game
+        dispose();
+    }
+    
+    /**
+     * Loop the game
+     */
+    private void _loop() {
+        float delta;
+        float accumulator = 0f;
+        float interval = 1f / TARGET_UPS;
+        float alpha;
+        
+        while(glfwWindowShouldClose(window) == GL_FALSE) {
+        	delta = timer.getDelta();
+            accumulator += delta;
+            
+            inputController.poll();
+            
+            while(accumulator >= interval) {
+                update();
+                timer.updateUPS();
+                accumulator -= interval;
+            }
+            
+            // Calculate alpha value for interpolation
+            alpha = accumulator / interval;
+            
+            // Render game
+            render(alpha);
+        	glfwSwapBuffers(window); // swap the color buffers
+            glfwPollEvents(); // Poll for window events.
+
+            // Update timer
+            timer.updateFPS();
+            timer.update();
+
+            // Sync @ FPS
+            _sync(TARGET_FPS);
+        }
     }
     
     /**
@@ -115,7 +146,7 @@ public class Game {
      *
      * @param fps Frames per second
      */
-    private void sync(int fps) {
+    private void _sync(int fps) {
         double lastLoopTime = timer.getLastLoopTime();
         double now = timer.getTime();
         float targetTime = 1f / fps;
@@ -136,70 +167,35 @@ public class Game {
         }
     }
     
-    private void loop() {
-        float delta;
-        float accumulator = 0f;
-        float interval = 1f / TARGET_UPS;
-        float alpha;
-        
-        while(glfwWindowShouldClose(window) == GL_FALSE) {
-        	delta = timer.getDelta();
-            accumulator += delta;
-            
-            input();
-            
-            while(accumulator >= interval) {
-                update();
-                timer.updateUPS();
-                accumulator -= interval;
-            }
-            
-            // Calculate alpha value for interpolation
-            alpha = accumulator / interval;
-            
-            // Render game
-            render(alpha);
-        	glfwSwapBuffers(window); // swap the color buffers
-            glfwPollEvents(); // Poll for window events.
-
-            // Update timer FPS
-            timer.updateFPS();
-        	
-            // Draw FPS, UPS and Context version
-            //int height = renderer.getDebugTextHeight("Context");
-            //renderer.drawDebugText("FPS: " + timer.getFPS() + " | UPS: " + timer.getUPS(), 5, 5 + height);
-
-            // Update timer
-            timer.update();
-
-            // Sync @ FPS
-            sync(TARGET_FPS);
-        }
-    }
-
+	/////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////
+    
     /**
-     * Handles input.
+     * Initializes the game
      */
-    private void input() {
-    	input.input();
-        state.input();
-    }
+    public abstract void init();
     
     /**
      * Updates the game (fixed timestep).
      */
-    private void update() {
-        state.update();
-    }
+    public abstract void update();
     
     /**
      * Renders the game (with interpolation).
      *
      * @param alpha Alpha value, needed for interpolation
      */
-    private void render(float alpha) {
-        state.render(alpha);
-    }
+    public abstract void render(float alpha);
+    
+    /**
+     * Disposes the game
+     */
+    public abstract void dispose();
+    
+	/////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////
     
 	/**
 	 * @return the window
@@ -211,7 +207,7 @@ public class Game {
 	/**
 	 * @return the input
 	 */
-	public InputController getInput() {
-		return input;
+	public InputController getInputController() {
+		return inputController;
 	}
 }

@@ -348,4 +348,18 @@ public class Maze {
 	public int[][] getDistancesFromOrigin() {
 		return distancesFromOrigin;
 	}
+	
+	public ArrayList<Point> getUpGates() {
+		ArrayList<Point> upGates = new ArrayList<Point>();
+		upGates.add(origin);
+		
+		return upGates;
+	}
+	
+	public ArrayList<Point> getDownGates() {
+		ArrayList<Point> downGates = new ArrayList<Point>();
+		downGates.add(end);
+		
+		return downGates;
+	}
 }

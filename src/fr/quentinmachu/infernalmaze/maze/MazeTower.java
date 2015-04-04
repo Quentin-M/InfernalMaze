@@ -1,9 +1,7 @@
 package fr.quentinmachu.infernalmaze.maze;
 
-import java.awt.List;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
 // A tower of mazes that we have to browse from top to bottom

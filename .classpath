@@ -3,6 +3,8 @@
 	<classpathentry excluding="old/" kind="src" path="src"/>
 	<classpathentry kind="lib" path="libs/lwjgl/jar/lwjgl.jar"/>
 	<classpathentry kind="lib" path="libs/PNGDecoder.jar"/>
+	<classpathentry kind="lib" path="libs/jinput/jinput-test.jar"/>
+	<classpathentry kind="lib" path="libs/jinput/jinput.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

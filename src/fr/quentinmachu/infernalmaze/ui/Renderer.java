@@ -75,20 +75,18 @@ public class Renderer {
 
     private int primitive = GL_TRIANGLES;
     
-    public Renderer(Camera camera, Texture texture, Light mainLight, Material material, Vector3f ambient) {
-    	this(camera, texture, mainLight, material, ambient, false);
+    public Renderer(Camera camera, Texture texture, Material material, Vector3f ambient) {
+    	this(camera, texture, material, ambient, false);
     }
     
-    public Renderer(Camera camera, Texture texture, Light mainLight, Material material, Vector3f ambient, boolean useCubeMap) {
+    public Renderer(Camera camera, Texture texture, Material material, Vector3f ambient, boolean useCubeMap) {
     	this.camera = camera;
     	this.texture = texture;
     	this.useCubeMap = useCubeMap;
     	this.material = material;
     	this.ambient = ambient;
     	
-    	lights = new ArrayList<Light>();
-    	lights.add(mainLight);
-    	
+    	lights = new ArrayList<Light>();    	
     	model = new Matrix4f();
     	
     	init();
@@ -367,7 +365,7 @@ public class Renderer {
 	/**
 	 * @return the lights
 	 */
-	public ArrayList<Light> getLights() {
-		return lights;
+	public void setLights(ArrayList<Light> lights) {
+		this.lights = lights;
 	}
 }
