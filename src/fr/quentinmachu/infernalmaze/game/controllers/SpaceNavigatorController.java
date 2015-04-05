@@ -10,10 +10,6 @@ import net.java.games.input.ControllerEnvironment;
 import fr.quentinmachu.infernalmaze.game.Game;
 
 public class SpaceNavigatorController extends InputController {
-	// Constats
-	public static final float ROTATION_SENSITIVITY = 100.0f;
-	public static final float POSITION_SENSITIVITY = 5.0f;
-	
 	// Internal variables
 	private Controller spaceNavigator;
 	private Component[] components;
@@ -50,30 +46,28 @@ public class SpaceNavigatorController extends InputController {
             for(Component component: components) {
                 switch(component.getName()) {
                     case "x":
-                    	x = POSITION_SENSITIVITY * component.getPollData();
+                    	setX((float) (component.getPollData()*MAX_MOVEMENT/0.26));
                         break;
                     case "y":
-                    	y = POSITION_SENSITIVITY * component.getPollData();
+                    	setY((float) (component.getPollData()*MAX_MOVEMENT/0.26));
                         break;
                     case "z":
-                    	z = POSITION_SENSITIVITY * component.getPollData();
+                    	setZ((float) (component.getPollData()*MAX_MOVEMENT/0.26));
                         break;
                     case "rx":
-                    	rx = ROTATION_SENSITIVITY * component.getPollData();
+                    	setRx((float) (component.getPollData()*MAX_ROTATION_XY/0.26));
                         break;
                     case "ry":
-                    	ry = ROTATION_SENSITIVITY * component.getPollData();
+                    	setRy((float) (component.getPollData()*MAX_ROTATION_XY/0.26));
                         break;
                     case "rz":
-                        rz = ROTATION_SENSITIVITY * component.getPollData();
+                        setRz((float) (component.getPollData()*MAX_ROTATION_Z/0.26));
                         break;
                     case "0":
-                    	if(component.getPollData()==1.0) button0 = true;
-                    	else button0 = false;
+                    	if(component.getPollData()==1.0) setButton0(true);
+                    	else setButton0(false);
                     	break;
                     case "1":
-                    	if(component.getPollData()==1.0) button1 = true;
-                    	else button1= false;
                     	break;
                 }
             }
@@ -82,6 +76,6 @@ public class SpaceNavigatorController extends InputController {
 	
 	@Override
 	public void dispose() {
-		//cursorPosCallback.release();
+		
 	}
 }

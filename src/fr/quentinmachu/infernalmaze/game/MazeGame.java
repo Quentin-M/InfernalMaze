@@ -21,8 +21,8 @@ public class MazeGame extends Game {
     public static final float CAMERA_FAR = 100;
     public static final float CAMERA_TRAVELING_SPEED = 0.1f;
     
-    public static final float Z_CONTROLLER_TIME_THRESHOLD = 0.5f;
-    public static final float Z_CONTROLLER_MIN_AMPLITUDE = 0.8f;
+    public static final float Z_CONTROLLER_TIME_THRESHOLD = 0.8f;
+    public static final float Z_CONTROLLER_MIN_AMPLITUDE = 0.5f;
     
     // Rendering
     private Camera camera;
@@ -35,7 +35,7 @@ public class MazeGame extends Game {
     // Game variables
     private int size;
     private int depth;
-    private float cameraLevel;
+    private int cameraLevel;
     private int currentLevel;
 	
     private float z_controller_time_threshold_timer;
@@ -81,7 +81,7 @@ public class MazeGame extends Game {
     @Override
     public void update() {
     	float delta = 1 / (float) TARGET_UPS;
-    	
+    	    	
     	// Update camera
     	// If the button0 is pressed, align the camera with the current level
     	if(getInputController().isButton0()) {
@@ -96,6 +96,8 @@ public class MazeGame extends Game {
     			
     			if(getInputController().getZ()<0 && cameraLevel>0) cameraLevel--;
     			else if(getInputController().getZ()>0 && cameraLevel<depth-1) cameraLevel++;
+    			
+    			getInputController().setZ(0);
     		}
     	} else {
     		z_controller_time_threshold_timer = 0;
