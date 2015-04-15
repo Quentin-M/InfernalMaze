@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package fr.quentinmachu.infernalmaze.ui;
+package fr.quentinmachu.infernalmaze.game;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
