@@ -20,7 +20,6 @@ public class Maze {
 	private Point end;
 	private int[][] distancesFromOrigin;
 	
-	private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	public static final double RANDOM_RATIO = 0.10;
 	
 	// Each byte contains 4 bits of data : EWSN
@@ -30,7 +29,7 @@ public class Maze {
 	private byte grid[][];
 
 	public Maze(int width, int height) {
-		this(width, height, new Point(rnd.nextInt(width), rnd.nextInt(height)), new ArrayList<Point>());
+		this(width, height, new Point(ThreadLocalRandom.current().nextInt(width), ThreadLocalRandom.current().nextInt(height)), new ArrayList<Point>());
 	}
 	
 	public Maze(int width, int height, Point origin) {
@@ -38,7 +37,7 @@ public class Maze {
 	}
 	
 	public Maze(int width, int height, ArrayList<Point> deadEnds) {
-		this(width, height, new Point(rnd.nextInt(width), rnd.nextInt(height)), deadEnds);
+		this(width, height, new Point(ThreadLocalRandom.current().nextInt(width), ThreadLocalRandom.current().nextInt(height)), deadEnds);
 	}
 	
 	public Maze(byte[][] grid, int width, int height){

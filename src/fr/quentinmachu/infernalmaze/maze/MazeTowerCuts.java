@@ -8,7 +8,6 @@ import fr.quentinmachu.infernalmaze.graph.Graph;
 import fr.quentinmachu.infernalmaze.graph.Node;
 
 public class MazeTowerCuts {
-private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	private int width;
 	private int height; 
 	private int depth;
@@ -71,8 +70,8 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 		//Number of X & Y cuts
 		int nbrMaxXCuts = (width / minSizeMazeWidth) -1;
 		int nbrMaxYCuts = (height / minSizeMazeHeight)-1;
-		int nbrXCuts = rnd.nextInt(0, nbrMaxXCuts+1);
-		int nbrYCuts = rnd.nextInt(0, nbrMaxYCuts+1);
+		int nbrXCuts = ThreadLocalRandom.current().nextInt(0, nbrMaxXCuts+1);
+		int nbrYCuts = ThreadLocalRandom.current().nextInt(0, nbrMaxYCuts+1);
 		//int NbrXCuts = 1;
 		//int NbrYCuts = 0;
 		
@@ -90,7 +89,7 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	    }else{
 		    xGap = this.width - (nbrXCuts + 1) * this.minSizeMazeWidth;
 		    for (int i = 0; i < nbrXCuts; i++) {
-		      final int xIncrease = rnd.nextInt(xGap + 1);
+		      final int xIncrease = ThreadLocalRandom.current().nextInt(xGap + 1);
 		      xWidth[i] = this.minSizeMazeWidth + xIncrease;
 		      xGap -= xIncrease;
 		      if(i != 0) xWidth[i] += xWidth[i-1];
@@ -104,7 +103,7 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	    }else{
 		    yGap = this.height - (nbrYCuts + 1) * this.minSizeMazeHeight;
 		    for (int i = 0; i < nbrYCuts; i++) {
-		      final int yIncrease = rnd.nextInt(yGap + 1);
+		      final int yIncrease = ThreadLocalRandom.current().nextInt(yGap + 1);
 		      yHeight[i] = this.minSizeMazeWidth + yIncrease;
 		      yGap -= yIncrease;
 		      if(i != 0) yHeight[i] += yHeight[i-1];
@@ -125,7 +124,7 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 			Tower[i] = new MazeLevel(NbrXCuts,NbrYCuts);*/
 			/*
 			int XorY;
-			XorY = rnd.nextInt(0,1);
+			XorY = ThreadLocalRandom.current().nextInt(0,1);
 			if(XorY == 0 && ){
 				NbrXCutsToFill--;
 			}else{
@@ -167,13 +166,13 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 		}
 		for(int i = 1; i < nbrTowerLevel; i++){
 				//We need to pick a cut to not chose.
-				XorY = rnd.nextInt(0,2);
+				XorY = ThreadLocalRandom.current().nextInt(0,2);
 				if(XorY == 0 && xCutsToPick.isEmpty()) XorY = 1;
 				if(XorY == 1 && yCutsToPick.isEmpty()) XorY = 0;
 				if(XorY == 0){
 					Tower[i] = new MazeLevel(nbrYCuts+1,nbrXCuts);
 					if(xCutsToPick.size() == 1) posCutToLose = 0;
-					else posCutToLose = rnd.nextInt(0, xCutsToPick.size());
+					else posCutToLose = ThreadLocalRandom.current().nextInt(0, xCutsToPick.size());
 					cutToLose = xCutsToPick.get(posCutToLose);
 					yHeightCutted[i] = yHeight;
 					xWidthCutted[i] = new int[xWidth.length-1];
@@ -189,7 +188,7 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 				}else{
 					Tower[i] = new MazeLevel(nbrYCuts,nbrXCuts+1);
 					if(yCutsToPick.size() == 1) posCutToLose = 0; 
-					else posCutToLose = rnd.nextInt(0, yCutsToPick.size());
+					else posCutToLose = ThreadLocalRandom.current().nextInt(0, yCutsToPick.size());
 					cutToLose = yCutsToPick.get(posCutToLose);
 					xWidthCutted[i] = xWidth;
 					yHeightCutted[i] = new int[yHeight.length-1];
@@ -575,7 +574,7 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	Point tpFinding(Node smallerMaze, Node biggerMaze){
 		boolean alreadyUsed = true;
 		while(alreadyUsed == true){
-			int rand = rnd.nextInt(0,smallerMaze.getDeadEnds().size());
+			int rand = ThreadLocalRandom.current().nextInt(0,smallerMaze.getDeadEnds().size());
 			Point tp = smallerMaze.getDeadEnd(rand);
 			if(smallerMaze.getLinks().size() == 0 && biggerMaze.getLinks().size() == 0) return tp;
 			if(smallerMaze.getLinks().size() == 0 && biggerMaze.getLinks().size() != 0){
@@ -675,7 +674,7 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 		boolean alreadyUsed = true;
 		Point tp = new Point(-1,-1);
 		while(alreadyUsed == true){
-			tp.setLocation((double)rnd.nextInt(topLeft.x,botRight.x+1),(double)rnd.nextInt(topLeft.y,botRight.y+1));
+			tp.setLocation((double)ThreadLocalRandom.current().nextInt(topLeft.x,botRight.x+1),(double)ThreadLocalRandom.current().nextInt(topLeft.y,botRight.y+1));
 			for(int l = 0; l < maze1.getLinks().size(); l++){
 				if(maze1.getLink(l).getGate().getX() != tp.getX() || maze1.getLink(l).getGate().getY() != tp.getY()){
 					for(int m = 0; m < maze2.getLinks().size(); m++){

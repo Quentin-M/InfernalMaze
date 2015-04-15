@@ -8,7 +8,6 @@ public enum Direction {
     WEST(4, -1, 0) { @Override public Direction oppositeDirection() { return EAST; }},
     EAST(8, 1, 0) { @Override public Direction oppositeDirection() { return WEST; }};
     
-    private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
     public final int bit, dx, dy;
     
     private Direction(int ordinal, int dx, int dy) {
@@ -18,7 +17,7 @@ public enum Direction {
     }
     
     static public Direction randomDirection() {
-        return Direction.values()[rnd.nextInt(4)];
+        return Direction.values()[ThreadLocalRandom.current().nextInt(4)];
     }
     
     abstract public Direction oppositeDirection();

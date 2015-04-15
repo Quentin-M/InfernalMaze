@@ -16,11 +16,9 @@ public class MazeTower {
 	Maze[] mazes;
 	
 	private Point end;
-		
-	private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	
 	public MazeTower(int width, int height, int depth) {
-		this(width, height, depth, new Point(rnd.nextInt(width), rnd.nextInt(height)));
+		this(width, height, depth, new Point(ThreadLocalRandom.current().nextInt(width), ThreadLocalRandom.current().nextInt(height)));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -39,15 +37,15 @@ public class MazeTower {
 		
 		fakexiteger = new ArrayList[depth];
 		fakexitpoint = new ArrayList[depth];
+		int Version = 0; 
 		if(Version == 1)
 		for(int i = 0; i < depth-1; i++){
 			//Create new points to top
-			int NbPointToTopLevel = rnd.nextInt(0,mazes[i].getDeadEnds().size());
+			int NbPointToTopLevel = ThreadLocalRandom.current().nextInt(0,mazes[i].getDeadEnds().size());
 			fakexiteger[i] = new ArrayList<Integer>();
 			fakexitpoint[i] = new ArrayList<Point>();
 			while(fakexiteger[i].size() != NbPointToTopLevel){
-				int index = rnd.nextInt(0,mazes[i].getDeadEnds().size());
-				//TODO rajouter des comparaisons entre points pour vérifier qu'un accès d'en bas ne soit pas un accès en haut
+				int index = ThreadLocalRandom.current().nextInt(0,mazes[i].getDeadEnds().size());
 				if(!fakexiteger[i].contains(index)){
 					fakexiteger[i].add(index);
 					fakexitpoint[i].add(mazes[i].getDeadEnds().get(index));
@@ -116,6 +114,7 @@ public class MazeTower {
 		String s = "";
 		ArrayList<Point> NullArray = new ArrayList<Point>();
 		s += "<MazeTower width="+width+" height="+height+" depth="+depth+" origin=("+origin.x+","+origin.y+") end=("+end.x+","+end.y+")>\n";
+		int Version = 0; 
 		if(Version == 1){
 			for(int d = depth-1; d>=0; d--)
 				if(d == 0){
