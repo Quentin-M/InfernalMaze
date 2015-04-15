@@ -19,6 +19,7 @@ public class BallObject implements GameObject {
 	public static final float SPHERE_STEP = 10f;
 	public static final float SPHERE_RADIUS = 0.30f;	
 	public static final float TELEPORTING_MAX_SPHERE_STEP = 150f;
+	private static final float TELEPORTING_DECELERATION = 0.40f;
 	
 	public static final float GRAVITY = 15f;
 	public static final float FRICTION = 0.3f;
@@ -91,6 +92,7 @@ public class BallObject implements GameObject {
 		float ay = (float) (GRAVITY * Math.sin(Math.toRadians(gameState.getInputController().getRx())));
 		setVelocity(velocity.add(new Vector3f(ax * delta, ay * delta, 0)));
 		setVelocity(velocity.scale(1-(FRICTION * delta)));
+		if(isTeleporting) setVelocity(velocity.scale(1-(TELEPORTING_DECELERATION)));
 		
 		float dx = (float) ((velocity.x * delta) + (0 * ax * Math.pow(delta, 2)));
 		float dy = (float) ((velocity.y * delta) + (0 * ay * Math.pow(delta, 2)));
@@ -267,5 +269,12 @@ public class BallObject implements GameObject {
 	 */
 	public void setVelocity(Vector3f velocity) {
 		this.velocity = velocity;
+	}
+
+	/**
+	 * @return the isTeleporting
+	 */
+	public boolean isTeleporting() {
+		return isTeleporting;
 	}
 }
