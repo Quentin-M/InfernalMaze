@@ -347,6 +347,22 @@ public class Maze {
 		return grid[x][y];
 	}
 
+	public ArrayList<Point> getToTopMaze() {
+		return toTopMaze;
+	}
+
+	public void addToTopMaze(Point toTopMaze) {
+		this.toTopMaze.add(toTopMaze);
+	}
+
+	public ArrayList<Point> getToBottomMaze() {
+		return toBottomMaze;
+	}
+
+	public void addToBottomMaze(Point toBottomMaze) {
+		this.toBottomMaze.add(toBottomMaze);
+	}
+	
 	/**
 	 * @return the end
 	 */
