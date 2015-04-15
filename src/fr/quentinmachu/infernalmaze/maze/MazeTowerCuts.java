@@ -634,7 +634,7 @@ public class MazeTowerCuts {
 			commonPartDeadEnds.add(temp);
 		}
 		while(alreadyUsed == true){
-			tp = commonPartDeadEnds.get(rnd.nextInt(0,commonPartDeadEnds.size()));
+			tp = commonPartDeadEnds.get(ThreadLocalRandom.current().nextInt(0,commonPartDeadEnds.size()));
 			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() == 0) return tp;
 			if(maze2.getLinks().size() == 0 && maze1.getLinks().size() != 0){
 				for(int m = 0; m < maze1.getLinks().size(); m++){
@@ -736,10 +736,10 @@ public class MazeTowerCuts {
 				for(int k = 0; k < G.getNodesByLevel(i).get(j).getLinks().size(); k++){
 					if(G.getNodesByLevel(i).get(j).getLink(k).getIdNodeFrom() == G.getNodesByLevel(i).get(j).getId()){
 						//C'est le node du dessus.
-						mazeToPrint[i].addToBottomMaze(G.getNodesByLevel(i).get(j).getLink(k).getGate());
+						mazeToPrint[i].getDownGates().add(G.getNodesByLevel(i).get(j).getLink(k).getGate());
 					}else{
 						//C'est le node du dessous
-						mazeToPrint[i].addToTopMaze(G.getNodesByLevel(i).get(j).getLink(k).getGate());
+						mazeToPrint[i].getUpGates().add(G.getNodesByLevel(i).get(j).getLink(k).getGate());
 					}
 				}
 			}
@@ -772,5 +772,30 @@ public class MazeTowerCuts {
 		s += "</MazeTower>";
 		
 		return s;
+	}
+
+	/**
+	 * @return the height
+	 */
+	public int getHeight() {
+		return height;
+	}
+
+	/**
+	 * @return the width
+	 */
+	public int getWidth() {
+		return width;
+	}
+
+	/**
+	 * @return the depth
+	 */
+	public int getDepth() {
+		return depth;
+	}
+
+	public Maze[] getMazes() {
+		return mazeToPrint;
 	}
 }

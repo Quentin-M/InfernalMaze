@@ -5,6 +5,7 @@ import java.awt.Point;
 import fr.quentinmachu.infernalmaze.game.objects.BallObject;
 import fr.quentinmachu.infernalmaze.game.objects.MazeTowerObject;
 import fr.quentinmachu.infernalmaze.maze.MazeTower;
+import fr.quentinmachu.infernalmaze.maze.MazeTowerCuts;
 import fr.quentinmachu.infernalmaze.ui.Camera;
 import fr.quentinmachu.infernalmaze.ui.Light;
 import fr.quentinmachu.infernalmaze.ui.math.Vector3f;
@@ -33,18 +34,16 @@ public class MazeGame extends Game {
     private float mazeGap;
     
     // Game variables
-    private int size;
-    private int depth;
+    private MazeTowerCuts maze;
     private int cameraLevel;
     private int currentLevel;
 	
     private float z_controller_time_threshold_timer;
     private Point lastGate;
     
-    public MazeGame(int windowWidth, int windowHeight, String inputControllerName, int size, int depth) {
+    public MazeGame(int windowWidth, int windowHeight, String inputControllerName, MazeTowerCuts maze) {
 		super("Infernal Maze", windowWidth, windowHeight, inputControllerName);
-		this.size = size;
-		this.depth = depth;
+		this.maze = maze;
 	}
     
     @Override
@@ -52,7 +51,7 @@ public class MazeGame extends Game {
     	// Initialize game variables
     	currentLevel = 0;
 
-    	mazeGap = size*1.35f;
+    	mazeGap = (maze.getHeight()+maze.getWidth())/2*1.35f;
     	z_controller_time_threshold_timer = 0;
     	
     	// Initialize lighting
@@ -71,7 +70,7 @@ public class MazeGame extends Game {
     	camera = new Camera(getCameraTargetEye(), getCameraTargetCenter(), new Vector3f(0, 0, 1), CAMERA_FOV, CAMERA_NEAR, CAMERA_FAR);
     	
         // Initialize the maze tower
-    	mazeTower = new MazeTowerObject(this, new MazeTower(size, size, depth));
+    	mazeTower = new MazeTowerObject(this, maze);
     	
     	// Initialize the ball
     	ball = new BallObject(this);
@@ -95,7 +94,7 @@ public class MazeGame extends Game {
     			z_controller_time_threshold_timer = 0;
     			
     			if(getInputController().getZ()<0 && cameraLevel>0) cameraLevel--;
-    			else if(getInputController().getZ()>0 && cameraLevel<depth-1) cameraLevel++;
+    			else if(getInputController().getZ()>0 && cameraLevel<maze.getDepth()-1) cameraLevel++;
     			
     			getInputController().setZ(0);
     		}
@@ -106,7 +105,7 @@ public class MazeGame extends Game {
     	// Update level if the ball is currently on a teleporter
 		int ballCoordX = (int) Math.floor(ball.getPosition().x);
 		int ballCoordY = (int) Math.floor(ball.getPosition().y);
-		if(currentLevel<depth-1) {
+		if(currentLevel<maze.getDepth()-1) {
 			for(Point p: mazeTower.getMazeObjects()[currentLevel].getMaze().getDownGates()) {
 				if((lastGate==null || !lastGate.equals(p)) && p.x == ballCoordX && p.y == ballCoordY) {
 				//if(getInputController().isButton1() && lastGate==null) {
@@ -155,11 +154,11 @@ public class MazeGame extends Game {
 	/////////////////////////////////////////////////////////////////////
 	
 	private Vector3f getCameraTargetCenter() {
-		return new Vector3f(size/2, size/2, - cameraLevel*mazeGap);
+		return new Vector3f(maze.getWidth()/2, maze.getHeight()/2, - cameraLevel*mazeGap);
 	}
 	
 	private Vector3f getCameraTargetEye() {
-		return new Vector3f(size/2, size*1.20f, - (cameraLevel-1)*mazeGap-0.1f);
+		return new Vector3f(maze.getWidth()/2, maze.getHeight()*1.20f, - (cameraLevel-1)*mazeGap-0.1f);
 	}
 	
 	/////////////////////////////////////////////////////////////////////

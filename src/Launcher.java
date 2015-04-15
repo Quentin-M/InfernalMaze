@@ -1,22 +1,19 @@
 import java.awt.Point;
+import java.util.concurrent.ThreadLocalRandom;
 
+import fr.quentinmachu.infernalmaze.game.MazeGame;
 //import fr.quentinmachu.infernalmaze.game.MazeGame;
 import fr.quentinmachu.infernalmaze.maze.MazeTowerCuts;
 
 public class Launcher {
-	public static void main(String[] args) {		
-		//new MazeGame(1024, 768, "SpaceNavigatorController", 10, 3).run();
-		//TODO Better maze management (Aurelien)
-		//TODO Ground texture
-		//TODO Add missing controls on Mouse Controller
-		//TODO GG screen
-		int Width = 10;
-		int Height = 10;
+	public static void main(String[] args) {
+		int width = 20;
+		int height = 20;
 		int minSizeWidth = 5;
 		int minSizeHeight = 5;
-		Point origin = new Point(0,0);
+		int depth = 4;
+		Point origin = new Point(ThreadLocalRandom.current().nextInt(width), ThreadLocalRandom.current().nextInt(height));
 		
-		MazeTowerCuts Tower = new MazeTowerCuts(Width,Height,Width, minSizeWidth,minSizeHeight,origin);
-		System.out.println(Tower);
+		new MazeGame(1024, 768, "MouseController",  new MazeTowerCuts(width, height, depth, minSizeWidth, minSizeHeight, origin)).run();
 	}
 }

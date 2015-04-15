@@ -2,12 +2,13 @@ package fr.quentinmachu.infernalmaze.game.objects;
 
 import fr.quentinmachu.infernalmaze.game.MazeGame;
 import fr.quentinmachu.infernalmaze.maze.MazeTower;
+import fr.quentinmachu.infernalmaze.maze.MazeTowerCuts;
 
 public class MazeTowerObject implements GameObject {
-	private MazeTower mazeTower;
+	private MazeTowerCuts mazeTower;
 	private MazeObject[] mazeObjects;
 	
-	public MazeTowerObject(MazeGame gameState, MazeTower mazeTower) {
+	public MazeTowerObject(MazeGame gameState, MazeTowerCuts mazeTower) {
 		this.mazeTower = mazeTower;
 		
 		mazeObjects = new MazeObject[mazeTower.getDepth()];
@@ -33,7 +34,7 @@ public class MazeTowerObject implements GameObject {
 	/**
 	 * @return the mazeTower
 	 */
-	public MazeTower getMazeTower() {
+	public MazeTowerCuts getMazeTower() {
 		return mazeTower;
 	}
 

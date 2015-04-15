@@ -362,32 +362,10 @@ public class Maze {
 	}
 	
 	public ArrayList<Point> getUpGates() {
-		ArrayList<Point> upGates = new ArrayList<Point>();
-		upGates.add(origin);
-		
-		return upGates;
+		return toTopMaze;
 	}
 	
 	public ArrayList<Point> getDownGates() {
-		ArrayList<Point> downGates = new ArrayList<Point>();
-		downGates.add(end);
-		
-		return downGates;
-	}
-
-	public ArrayList<Point> getToTopMaze() {
-		return toTopMaze;
-	}
-
-	public void addToTopMaze(Point toTopMaze) {
-		this.toTopMaze.add(toTopMaze);
-	}
-
-	public ArrayList<Point> getToBottomMaze() {
 		return toBottomMaze;
-	}
-
-	public void addToBottomMaze(Point toBottomMaze) {
-		this.toBottomMaze.add(toBottomMaze);
 	}
 }
