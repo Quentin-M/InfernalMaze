@@ -58,10 +58,10 @@ public class MazeTowerCuts {
 		
 		getVerticeByLevel();
 		for(int i = 0; i < this.depth; i++){
-			for(int j = 0; j < mazeToPrint[i].getToTopMaze().size(); j++)
-			System.out.println("Tp vers le haut au niveau "+i+" : "+mazeToPrint[i].getToTopMaze().get(j).getX()+","+mazeToPrint[i].getToTopMaze().get(j).getY());
-			for(int j = 0; j < mazeToPrint[i].getToBottomMaze().size();j++)
-			System.out.println("Tp vers le bas au niveau "+i+" : "+mazeToPrint[i].getToBottomMaze().get(j).getX()+","+mazeToPrint[i].getToBottomMaze().get(j).getY());
+			for(int j = 0; j < mazeToPrint[i].getUpGates().size(); j++)
+			System.out.println("Tp vers le haut au niveau "+i+" : "+mazeToPrint[i].getUpGates().get(j).getX()+","+mazeToPrint[i].getUpGates().get(j).getY());
+			for(int j = 0; j < mazeToPrint[i].getDownGates().size();j++)
+			System.out.println("Tp vers le bas au niveau "+i+" : "+mazeToPrint[i].getDownGates().get(j).getX()+","+mazeToPrint[i].getDownGates().get(j).getY());
 		}
 	}
 	
