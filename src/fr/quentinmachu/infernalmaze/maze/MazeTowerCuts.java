@@ -74,9 +74,37 @@ public class MazeTowerCuts {
 		int nbrYCuts = ThreadLocalRandom.current().nextInt(0, nbrMaxYCuts+1);
 		//int NbrXCuts = 1;
 		//int NbrYCuts = 0;
+		while(depth > nbrMaxXCuts + nbrMaxYCuts +1){
+			int temp = ThreadLocalRandom.current().nextInt(0,2);
+			if(temp == 0) this.minSizeMazeHeight--;
+			if(temp == 1) this.minSizeMazeWidth--;
+			
+			nbrMaxXCuts = (width / minSizeMazeWidth) -1;
+			nbrMaxYCuts = (height / minSizeMazeHeight)-1;
+			nbrXCuts = ThreadLocalRandom.current().nextInt(0, nbrMaxXCuts+1);
+			nbrYCuts = ThreadLocalRandom.current().nextInt(0, nbrMaxYCuts+1);
+		}
 		
-		//TODO CHANGE THIS SHIT
-		depth = nbrXCuts + nbrYCuts +1;
+		while(depth > nbrXCuts + nbrYCuts +1){
+			int temp = ThreadLocalRandom.current().nextInt(0,2);
+			if(nbrXCuts == nbrMaxXCuts && nbrYCuts == nbrMaxYCuts){
+				int temp2 = ThreadLocalRandom.current().nextInt(0,2);
+				if(temp2 == 0) this.minSizeMazeHeight--;
+				if(temp2 == 1) this.minSizeMazeWidth--;
+			}
+			if(temp == 0 && nbrXCuts < nbrMaxXCuts) nbrXCuts++;
+			if(temp == 1 && nbrYCuts < nbrMaxYCuts) nbrYCuts++;
+		}
+		
+		while(depth < nbrXCuts + nbrYCuts +1){
+			int temp = ThreadLocalRandom.current().nextInt(0,2);
+			if(temp == 0){
+				nbrXCuts--;
+			}else{
+				nbrYCuts--;
+			}
+		}
+
 		
 		final int[] xWidth = new int[nbrXCuts + 1];
 	    final int[] yHeight = new int[nbrYCuts + 1];
@@ -113,10 +141,8 @@ public class MazeTowerCuts {
 		
 		//for(int i = 0; i < yHeight.length; i++) System.out.println("yHeight["+i+"] = "+yHeight[i]);
 		
-		//On détermine le nbr de lvl de la tour
-		int nbrTowerLevel = nbrXCuts + nbrYCuts +1;
 		//On créer le tableau de la tour (avec les levels)
-		Tower = new MazeLevel[nbrTowerLevel];
+		Tower = new MazeLevel[depth];
 		Tower[0] = new MazeLevel(nbrYCuts +1,nbrXCuts+1);
 		
 /*
@@ -164,7 +190,7 @@ public class MazeTowerCuts {
 				yCutsToPick.add(i);
 			}
 		}
-		for(int i = 1; i < nbrTowerLevel; i++){
+		for(int i = 1; i < depth; i++){
 				//We need to pick a cut to not chose.
 				XorY = ThreadLocalRandom.current().nextInt(0,2);
 				if(XorY == 0 && xCutsToPick.isEmpty()) XorY = 1;
@@ -216,7 +242,7 @@ public class MazeTowerCuts {
 			 * Une fois l'emplacement de la fin du maze déterminé et son début on peut déterminer si oui ou non il y a superposition
 			 * Tester X et Y !!!!!!! EN MÊME TEMPS	
 			 */
-		for(int i = 0; i < nbrTowerLevel; i++){
+		for(int i = 0; i < depth; i++){
 			int height = 0;
 			int width = 0;
 			int[] xTemp;
