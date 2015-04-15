@@ -22,9 +22,6 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	public MazeLevel[] Tower;
 	public Graph G;
 	
-	private ArrayList<Point>[] toTopMaze;
-	private ArrayList<Point>[] toBottomMaze;
-	
 	private Maze[] mazeToPrint;
 	
 	public MazeTowerCuts(int width, int height, int minSizeMazeWidth, int minSizeMazeHeight){
@@ -32,7 +29,7 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	}
 	
 	public MazeTowerCuts(int width, int height, int minSizeMazeWidth, int minSizeMazeHeight, Point origin){
-		this(width, height, 10 , minSizeMazeWidth, minSizeMazeHeight, origin);
+		this(width, height, 2 , minSizeMazeWidth, minSizeMazeHeight, origin);
 	}
 	
 	public MazeTowerCuts(int width, int height, int depth, int minSizeMazeWidth, int minSizeMazeHeight, Point origin) {
@@ -59,8 +56,14 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 		}
 		graphVertices();
 		pathFinding();
-		toTopMaze = new ArrayList[this.depth];
-		toBottomMaze = new ArrayList[this.depth];
+		
+		getVerticeByLevel();
+		for(int i = 0; i < this.depth; i++){
+			for(int j = 0; j < mazeToPrint[i].getToTopMaze().size(); j++)
+			System.out.println("Tp vers le haut au niveau "+i+" : "+mazeToPrint[i].getToTopMaze().get(j).getX()+","+mazeToPrint[i].getToTopMaze().get(j).getY());
+			for(int j = 0; j < mazeToPrint[i].getToBottomMaze().size();j++)
+			System.out.println("Tp vers le bas au niveau "+i+" : "+mazeToPrint[i].getToBottomMaze().get(j).getX()+","+mazeToPrint[i].getToBottomMaze().get(j).getY());
+		}
 	}
 	
 	private void generate(){
@@ -68,8 +71,8 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 		//Number of X & Y cuts
 		int nbrMaxXCuts = (width / minSizeMazeWidth) -1;
 		int nbrMaxYCuts = (height / minSizeMazeHeight)-1;
-		int nbrXCuts = 2;//rnd.nextInt(0, nbrMaxXCuts+1);
-		int nbrYCuts = 2;//rnd.nextInt(0, nbrMaxYCuts+1);
+		int nbrXCuts = rnd.nextInt(0, nbrMaxXCuts+1);
+		int nbrYCuts = rnd.nextInt(0, nbrMaxYCuts+1);
 		//int NbrXCuts = 1;
 		//int NbrYCuts = 0;
 		
@@ -729,15 +732,15 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	}
 	
 	void getVerticeByLevel(){
-		for(int i = 1; i < Tower.length; i++){
+		for(int i = 0; i < Tower.length; i++){
 			for(int j = 0; j < G.getNodeCountByLevel(i); j++){
 				for(int k = 0; k < G.getNodesByLevel(i).get(j).getLinks().size(); k++){
 					if(G.getNodesByLevel(i).get(j).getLink(k).getIdNodeFrom() == G.getNodesByLevel(i).get(j).getId()){
 						//C'est le node du dessus.
-						toBottomMaze[i].add(G.getNodesByLevel(i).get(j).getLink(k).getGate());
+						mazeToPrint[i].addToBottomMaze(G.getNodesByLevel(i).get(j).getLink(k).getGate());
 					}else{
 						//C'est le node du dessous
-						toTopMaze[i].add(G.getNodesByLevel(i).get(j).getLink(k).getGate());
+						mazeToPrint[i].addToTopMaze(G.getNodesByLevel(i).get(j).getLink(k).getGate());
 					}
 				}
 			}
@@ -754,11 +757,11 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 					for(int j = 0; j < Tower[d].getMazes()[i].length; j++){
 						Maze theMaze = Tower[d].getMazes()[i][j];
 						if(d == 0){
-							s+= theMaze.toString(NullArray, toBottomMaze[d]);
+							//s+= theMaze.toString(NullArray, toBottomMaze[d]);
 						}else if(d == depth-1){
-							s+= theMaze.toString(toBottomMaze[d-1],NullArray);
+							//s+= theMaze.toString(toBottomMaze[d-1],NullArray);
 						}else{
-							s += theMaze.toString(toBottomMaze[d-1], toBottomMaze[d]);
+							//s += theMaze.toString(toBottomMaze[d-1], toBottomMaze[d]);
 						}
 					}
 		}else{

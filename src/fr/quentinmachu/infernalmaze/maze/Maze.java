@@ -14,6 +14,8 @@ public class Maze {
 	private Point origin;
 	private ArrayList<Point> deadEnds;
 	//private ArrayList<Point> soluce;
+	private ArrayList<Point> toTopMaze;
+	private ArrayList<Point> toBottomMaze;
 	
 	private Point end;
 	private int[][] distancesFromOrigin;
@@ -54,6 +56,8 @@ public class Maze {
 		this.height = height;
 		this.origin = origin;
 		this.deadEnds = deadEnds;
+		this.toTopMaze = new ArrayList<Point>();
+		this.toBottomMaze = new ArrayList<Point>();
 		
 		grid = new byte[width][height];
 		
@@ -370,5 +374,21 @@ public class Maze {
 		downGates.add(end);
 		
 		return downGates;
+	}
+
+	public ArrayList<Point> getToTopMaze() {
+		return toTopMaze;
+	}
+
+	public void addToTopMaze(Point toTopMaze) {
+		this.toTopMaze.add(toTopMaze);
+	}
+
+	public ArrayList<Point> getToBottomMaze() {
+		return toBottomMaze;
+	}
+
+	public void addToBottomMaze(Point toBottomMaze) {
+		this.toBottomMaze.add(toBottomMaze);
 	}
 }
