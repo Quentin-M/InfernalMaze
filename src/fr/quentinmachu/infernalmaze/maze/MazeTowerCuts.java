@@ -16,6 +16,7 @@ public class MazeTowerCuts {
 	
 	private Point origin;
 	private Point end;
+	private int endLevel;
 	
 	private int Version = 0;
 	public MazeLevel[] Tower;
@@ -40,6 +41,7 @@ public class MazeTowerCuts {
 		this.depth = depth;
 		this.minSizeMazeHeight = minSizeMazeHeight;
 		this.minSizeMazeWidth = minSizeMazeWidth;
+		this.end = new Point(width,height);
 		this.G = new Graph();
 		//Step 1 on détermine le premier lvl de coupes à effectuer
 		//Step 2 on Créer depth tableau 2D pour stocker chaque maze.
@@ -750,9 +752,14 @@ public class MazeTowerCuts {
 		}
 		System.out.println("}");
 		System.out.println("Distances depuis le node 0");
+		int tempId = 0;
+		int temp = 0;
 		for(int i = 0; i < dist.length; i++){
+			if(temp < dist[i]){temp = dist[i]; tempId = i;}
 			System.out.println("Node "+i+" :"+dist[i]);
 		}
+		this.endLevel = G.getNode(tempId).getLevel();
+		this.end.setLocation((double)ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().x,G.getNode(tempId).getBotRight().x+1),(double)ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().y,G.getNode(tempId).getBotRight().y+1));
 		System.out.println("");
 	}
 	
