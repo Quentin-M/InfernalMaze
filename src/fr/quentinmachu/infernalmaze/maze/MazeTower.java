@@ -16,13 +16,7 @@ public class MazeTower {
 	Maze[] mazes;
 	
 	private Point end;
-	
-	
-	//Version 0 = just the mazetower
-	//Version 1 = maze tower with links for upper maze. (Only on link to go down, it's always the good one)
-	private int Version = 0;
-	
-	
+		
 	private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	
 	public MazeTower(int width, int height, int depth) {

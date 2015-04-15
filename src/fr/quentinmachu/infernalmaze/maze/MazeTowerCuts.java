@@ -27,6 +27,14 @@ private static final ThreadLocalRandom rnd = ThreadLocalRandom.current();
 	
 	private Maze[] mazeToPrint;
 	
+	public MazeTowerCuts(int width, int height, int minSizeMazeWidth, int minSizeMazeHeight){
+		this(width, height, minSizeMazeWidth, minSizeMazeHeight, new Point(0,0) );
+	}
+	
+	public MazeTowerCuts(int width, int height, int minSizeMazeWidth, int minSizeMazeHeight, Point origin){
+		this(width, height, 10 , minSizeMazeWidth, minSizeMazeHeight, origin);
+	}
+	
 	public MazeTowerCuts(int width, int height, int depth, int minSizeMazeWidth, int minSizeMazeHeight, Point origin) {
 		if(width<=0 || height<=0 || depth<1 || origin.x<0 || origin.x>=width || origin.y<0 || origin.y>=height)
 			throw new IllegalArgumentException();

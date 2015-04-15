@@ -39,6 +39,11 @@ public class Maze {
 		this(width, height, new Point(rnd.nextInt(width), rnd.nextInt(height)), deadEnds);
 	}
 	
+	public Maze(byte[][] grid, int width, int height){
+		this(width,height);
+		this.grid = grid;
+	}
+	
 	public Maze(int width, int height, Point origin, ArrayList<Point> deadEnds) {
 		if(width<=0 || height<=0 || origin.x<0 || origin.x>=width || origin.y<0 || origin.y>=height)
 			throw new IllegalArgumentException();
@@ -198,6 +203,10 @@ public class Maze {
 			throw new IllegalArgumentException();
 		
 		return ((grid[x][y] & d.bit) == d.bit);
+	}
+	
+	public void setGrid(int width, int height, byte cell){
+		this.grid[width][height] = cell;
 	}
 	
 	////////////////////////////////////////////////////////////
