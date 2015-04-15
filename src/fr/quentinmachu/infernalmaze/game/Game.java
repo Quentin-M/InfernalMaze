@@ -4,7 +4,7 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
 import fr.quentinmachu.infernalmaze.game.controllers.InputController;
-import fr.quentinmachu.infernalmaze.ui.Timer;
+
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -136,20 +136,20 @@ public abstract class Game {
             timer.updateFPS();
             timer.update();
 
+            // System.out.println(timer.getUPS() + " " + timer.getFPS());
+            
             // Sync @ FPS
-            _sync(TARGET_FPS);
+            _sync();
         }
     }
     
     /**
      * Synchronizes the game at specified frames per second.
-     *
-     * @param fps Frames per second
      */
-    private void _sync(int fps) {
+    private void _sync() {
         double lastLoopTime = timer.getLastLoopTime();
         double now = timer.getTime();
-        float targetTime = 1f / fps;
+        float targetTime = 1f / TARGET_FPS;
 
         while (now - lastLoopTime < targetTime) {
             Thread.yield();
