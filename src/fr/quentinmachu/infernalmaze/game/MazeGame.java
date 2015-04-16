@@ -83,7 +83,7 @@ public class MazeGame extends Game {
     	    	
     	// Update camera
     	// If the button0 is pressed, align the camera with the current level
-    	if(getInputController().isButton0()) {
+    	if(getInputController().isButton1()) {
     		cameraLevel = currentLevel;
     	}
     	// If the Z-axis of the controller is used, use a timer & a threshold to determine if we should go up/down
@@ -105,24 +105,19 @@ public class MazeGame extends Game {
     	// Update level if the ball is currently on a teleporter
 		int ballCoordX = (int) Math.floor(ball.getPosition().x);
 		int ballCoordY = (int) Math.floor(ball.getPosition().y);
-		if(currentLevel<maze.getDepth()-1) {
+		if(currentLevel<maze.getDepth()-1 && !ball.isTeleporting()) {
 			for(Point p: mazeTower.getMazeObjects()[currentLevel].getMaze().getDownGates()) {
-				if((lastGate==null || !lastGate.equals(p)) && p.x == ballCoordX && p.y == ballCoordY) {
-				//if(getInputController().isButton1() && lastGate==null) {
+				if(getInputController().isButton0() && p.x == ballCoordX && p.y == ballCoordY) {
 					ball.teleport();
 					currentLevel++;
-					lastGate = p;
-					ball.teleport();
 				}
 			}
 		}
-		if(currentLevel>0) {
+		if(currentLevel>0 && !ball.isTeleporting()) {
 			for(Point p: mazeTower.getMazeObjects()[currentLevel].getMaze().getUpGates()) {
-				if((lastGate==null || !lastGate.equals(p)) && p.x == ballCoordX && p.y == ballCoordY) {
+				if(getInputController().isButton0() && p.x == ballCoordX && p.y == ballCoordY) {
 					ball.teleport();
 					currentLevel--;
-					cameraLevel = currentLevel;
-					lastGate = p;
 				}
 			}
 		}
