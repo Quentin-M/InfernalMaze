@@ -228,4 +228,11 @@ public class MazeObject implements GameObject {
 	public int getLevel() {
 		return level;
 	}
+
+	/**
+	 * @return the rotation
+	 */
+	public Vector3f getRotation() {
+		return rotation;
+	}
 }

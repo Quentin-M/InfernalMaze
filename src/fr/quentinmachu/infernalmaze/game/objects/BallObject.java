@@ -88,8 +88,8 @@ public class BallObject implements GameObject {
 		collide();
 		
 		// Set position & velocity
-		float ax = (float) (GRAVITY * Math.sin(Math.toRadians(-gameState.getInputController().getRy())));
-		float ay = (float) (GRAVITY * Math.sin(Math.toRadians(gameState.getInputController().getRx())));
+		float ax = (float) (GRAVITY * Math.sin(Math.toRadians(gameState.getMazeTower().getMazeObjects()[gameState.getCurrentLevel()].getRotation().y)));
+		float ay = (float) (GRAVITY * Math.sin(Math.toRadians(-gameState.getMazeTower().getMazeObjects()[gameState.getCurrentLevel()].getRotation().x)));
 		setVelocity(velocity.add(new Vector3f(ax * delta, ay * delta, 0)));
 		setVelocity(velocity.scale(1-(FRICTION * delta)));
 		if(isTeleporting) setVelocity(velocity.scale(1-(TELEPORTING_DECELERATION)));
