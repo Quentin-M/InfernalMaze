@@ -145,10 +145,30 @@ public class MazeObject implements GameObject {
 	
 	public ArrayList<Light> getLights() {
 		ArrayList<Light> lights = new ArrayList<Light>();
+		Vector3f spotDirection = new Vector3f(0.0f, 0.0f, 0.0f);
 		lights.add(gameState.getMainLight());
 		
-		Vector3f spotDirection = new Vector3f(0.0f, 0.0f, 0.0f);
+		if(level == 0) // Entrance gate
+			lights.add(new Light(
+				getFloorTransformation().multiply(new Vector4f((float) (gameState.getMazeTower().getMazeTower().getOrigin().getX()+0.5f), (float) (gameState.getMazeTower().getMazeTower().getOrigin().getY()+0.5f), WALL_HEIGHT/2, 1.0f)),
+				ENTRANCE_GATE_DIFFUSE_LIGHT_COLOR,
+				ENTRANCE_GATE_SPECULAR_LIGHT_COLOR,
+				GATE_LIGHT_ATTENUATION.x, GATE_LIGHT_ATTENUATION.y, GATE_LIGHT_ATTENUATION.z,
+				360f, 0.0f,
+				spotDirection
+			));
 		
+		if(level == gameState.getMazeTower().getMazeTower().getEndLevel())
+			lights.add(new Light(
+				getFloorTransformation().multiply(new Vector4f((float) (gameState.getMazeTower().getMazeTower().getEnd().getX()+0.5f), (float) (gameState.getMazeTower().getMazeTower().getEnd().getY()+0.5f), WALL_HEIGHT/2, 1.0f)),
+				EXIT_GATE_DIFFUSE_LIGHT_COLOR,
+				EXIT_GATE_SPECULAR_LIGHT_COLOR,
+				GATE_LIGHT_ATTENUATION.x, GATE_LIGHT_ATTENUATION.y, GATE_LIGHT_ATTENUATION.z,
+				360f, 0.0f,
+				spotDirection
+			));
+			
+		// Down gates
 		for(Point p: maze.getDownGates()) {
 			Light l = new Light(
 				getFloorTransformation().multiply(new Vector4f(p.x+0.5f, p.y+0.5f, WALL_HEIGHT/2, 1.0f)),
@@ -161,6 +181,8 @@ public class MazeObject implements GameObject {
 			
 			lights.add(l);
 		}
+		
+		// Up gates
 		for(Point p: maze.getUpGates()) {
 			Light l = new Light(
 				getFloorTransformation().multiply(new Vector4f(p.x+0.5f, p.y+0.5f, WALL_HEIGHT/2, 1.0f)),
