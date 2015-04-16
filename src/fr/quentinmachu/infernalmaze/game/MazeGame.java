@@ -74,7 +74,7 @@ public class MazeGame extends Game {
     	
     	// Initialize the ball
     	ball = new BallObject(this);
-    	ball.setPosition(new Vector3f((float) (mazeTower.getMazeObjects()[currentLevel].getMaze().getOrigin().getX() + 0.5f), (float) (mazeTower.getMazeObjects()[currentLevel].getMaze().getOrigin().getY() + 0.5f), BallObject.SPHERE_RADIUS));
+    	ball.setPosition(new Vector3f((float) (mazeTower.getMazeTower().getOrigin().getX() + 0.5f), (float) (mazeTower.getMazeTower().getOrigin().getY() + 0.5f), BallObject.getSphereRadius()));
     }
 
     @Override
