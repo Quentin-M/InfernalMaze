@@ -182,21 +182,21 @@ public class MazeObject implements GameObject {
 		
 		switch(d) {
 			case NORTH:
-				wallRenderer.drawSurface(x, y+thickness, 0f, x, y+thickness, WALL_HEIGHT, x+1, y+thickness, WALL_HEIGHT, x+1, y+thickness, 0f);
-				wallRenderer.drawSurface(x, y-thickness, 0f, x, y-thickness, WALL_HEIGHT, x+1, y-thickness, WALL_HEIGHT, x+1, y-thickness, 0f);
-				wallRenderer.drawSurface(x, y+thickness, WALL_HEIGHT, x, y-thickness, WALL_HEIGHT, x+1, y-thickness, WALL_HEIGHT, x+1, y+thickness, WALL_HEIGHT); // Roof
-				wallRenderer.drawSurface(x, y+thickness, 0f, x, y+thickness, WALL_HEIGHT, x, y-thickness, WALL_HEIGHT, x, y-thickness, 0f); // Side 1
-				wallRenderer.drawSurface(x+1, y+thickness, 0f, x+1, y+thickness, WALL_HEIGHT, x+1, y-thickness, WALL_HEIGHT, x+1, y-thickness, 0f); // Side 2*/
+				wallRenderer.drawSurface(x, y+thickness, 0f, x, y+thickness, WALL_HEIGHT+0.01f, x+1, y+thickness, WALL_HEIGHT+0.01f, x+1, y+thickness, 0f);
+				wallRenderer.drawSurface(x, y-thickness, 0f, x, y-thickness, WALL_HEIGHT+0.01f, x+1, y-thickness, WALL_HEIGHT+0.01f, x+1, y-thickness, 0f);
+				wallRenderer.drawSurface(x, y+thickness, WALL_HEIGHT+0.01f, x, y-thickness, WALL_HEIGHT+0.01f, x+1, y-thickness, WALL_HEIGHT+0.01f, x+1, y+thickness, WALL_HEIGHT+0.01f); // Roof
+				wallRenderer.drawSurface(x, y+thickness, 0f, x, y+thickness, WALL_HEIGHT+0.01f, x, y-thickness, WALL_HEIGHT+0.01f, x, y-thickness, 0f); // Side 1
+				wallRenderer.drawSurface(x+1, y+thickness, 0f, x+1, y+thickness, WALL_HEIGHT+0.01f, x+1, y-thickness, WALL_HEIGHT+0.01f, x+1, y-thickness, 0f); // Side 2*/
 				break;
 			case SOUTH:
-				wallRenderer.drawSurface(x, y+1+thickness, 0f, x, y+1+thickness, WALL_HEIGHT, x+1, y+1+thickness, WALL_HEIGHT, x+1, y+1+thickness, 0f);
-				wallRenderer.drawSurface(x, y+1-thickness, 0f, x, y+1-thickness, WALL_HEIGHT, x+1, y+1-thickness, WALL_HEIGHT, x+1, y+1-thickness, 0f);
-				wallRenderer.drawSurface(x, y+1+thickness, WALL_HEIGHT, x, y+1-thickness, WALL_HEIGHT, x+1, y+1-thickness, WALL_HEIGHT, x+1, y+1+thickness, WALL_HEIGHT); // Roof
-				wallRenderer.drawSurface(x, y+1-thickness, 0f, x, y+1-thickness, WALL_HEIGHT, x, y+1+thickness, WALL_HEIGHT, x, y+1+thickness, 0f); // Side 1
-				wallRenderer.drawSurface(x+1, y+1+thickness, 0f, x+1, y+1+thickness, WALL_HEIGHT, x+1, y+1-thickness, WALL_HEIGHT, x+1, y+1-thickness, 0f); // Side 2*/
+				wallRenderer.drawSurface(x, y+1+thickness, 0f, x, y+1+thickness, WALL_HEIGHT+0.01f, x+1, y+1+thickness, WALL_HEIGHT+0.01f, x+1, y+1+thickness, 0f);
+				wallRenderer.drawSurface(x+1, y+1-thickness, 0f, x+1, y+1-thickness, WALL_HEIGHT+0.01f, x, y+1-thickness, WALL_HEIGHT+0.01f, x, y+1-thickness, 0f);
+				wallRenderer.drawSurface(x, y+1+thickness, WALL_HEIGHT+0.01f, x, y+1-thickness, WALL_HEIGHT+0.01f, x+1, y+1-thickness, WALL_HEIGHT+0.01f, x+1, y+1+thickness, WALL_HEIGHT+0.01f); // Roof
+				wallRenderer.drawSurface(x, y+1-thickness, 0f, x, y+1-thickness, WALL_HEIGHT+0.01f, x, y+1+thickness, WALL_HEIGHT+0.01f, x, y+1+thickness, 0f); // Side 1
+				wallRenderer.drawSurface(x+1, y+1+thickness, 0f, x+1, y+1+thickness, WALL_HEIGHT+0.01f, x+1, y+1-thickness, WALL_HEIGHT+0.01f, x+1, y+1-thickness, 0f); // Side 2*/
 				break;
 			case WEST:
-				wallRenderer.drawSurface(x+thickness, y+1, WALL_HEIGHT, x+thickness, y, WALL_HEIGHT, x+thickness, y, 0f, x+thickness, y+1, 0f);
+				wallRenderer.drawSurface(x+thickness, y+1, 0f, x+thickness, y+1, WALL_HEIGHT, x+thickness, y, WALL_HEIGHT, x+thickness, y, 0f);
 				wallRenderer.drawSurface(x-thickness, y, 0f, x-thickness, y, WALL_HEIGHT, x-thickness, y+1, WALL_HEIGHT, x-thickness, y+1, 0f);
 				wallRenderer.drawSurface(x-thickness, y, WALL_HEIGHT, x+thickness, y, WALL_HEIGHT, x+thickness, y+1, WALL_HEIGHT, x-thickness, y+1, WALL_HEIGHT); // Roof
 				wallRenderer.drawSurface(x+thickness, y, 0f, x+thickness, y, WALL_HEIGHT, x-thickness, y, WALL_HEIGHT, x-thickness, y, 0f); // Side 1
