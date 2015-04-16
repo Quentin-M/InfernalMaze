@@ -1,7 +1,6 @@
 package fr.quentinmachu.infernalmaze.game.objects;
 
 import fr.quentinmachu.infernalmaze.game.MazeGame;
-import fr.quentinmachu.infernalmaze.maze.MazeTower;
 import fr.quentinmachu.infernalmaze.maze.MazeTowerCuts;
 
 public class MazeTowerObject implements GameObject {

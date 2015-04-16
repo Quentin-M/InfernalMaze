@@ -19,7 +19,7 @@ public class BallObject implements GameObject {
 	public static final float SPHERE_STEP = 10f;
 	public static final float SPHERE_RADIUS = 0.30f;	
 	public static final float TELEPORTING_MAX_SPHERE_STEP = 150f;
-	private static final float TELEPORTING_DECELERATION = 0.40f;
+	public static final float TELEPORTING_DECELERATION = 0.40f;
 	
 	public static final float GRAVITY = 15f;
 	public static final float FRICTION = 0.3f;

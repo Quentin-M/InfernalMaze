@@ -1,10 +1,6 @@
 package fr.quentinmachu.infernalmaze.maze;
 
-import java.awt.Point;
-import java.util.concurrent.ThreadLocalRandom;
-
 import fr.quentinmachu.infernalmaze.graph.Graph;
-import fr.quentinmachu.infernalmaze.graph.Node;
 
 public class MazeLevel {
 	private Maze[][] mazes;

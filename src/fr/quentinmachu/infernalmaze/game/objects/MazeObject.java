@@ -31,11 +31,15 @@ public class MazeObject implements GameObject {
 	public static final float WALL_HEIGHT = 1f;
 	public static final float MAZE_TO_INIT_ANIMATION_SPEED = 1f;
 	public static final float MAZE_ANIMATION_SPEED = 10f;
+	public static final Vector4f ENTRANCE_GATE_DIFFUSE_LIGHT_COLOR = new Vector4f(0.4f, 1.0f, 0.4f, 0.0f);
+	public static final Vector4f ENTRANCE_GATE_SPECULAR_LIGHT_COLOR = new Vector4f(0.4f, 1.0f, 0.4f, 0.0f);
+	public static final Vector4f EXIT_GATE_DIFFUSE_LIGHT_COLOR = new Vector4f(0.4f, 1.0f, 0.4f, 0.0f);
+	public static final Vector4f EXIT_GATE_SPECULAR_LIGHT_COLOR = new Vector4f(0.4f, 1.0f, 0.4f, 0.0f);
 	public static final Vector4f UP_GATE_DIFFUSE_LIGHT_COLOR = new Vector4f(1.0f, 0.4f, 0.4f, 0.0f);
 	public static final Vector4f UP_GATE_SPECULAR_LIGHT_COLOR = new Vector4f(1.0f, 0.4f, 0.4f, 0.0f);
 	public static final Vector4f DOWN_GATE_DIFFUSE_LIGHT_COLOR = new Vector4f(0.4f, 0.4f, 1.0f, 0.0f);
 	public static final Vector4f DOWN_GATE_SPECULAR_LIGHT_COLOR = new Vector4f(0.4f, 0.4f, 1.0f, 0.0f);
-	public static final Vector3f GATE_LIGHT_ATTENUATION = new Vector3f(0.0f, 1.0f, 0.33f);
+	public static final Vector3f GATE_LIGHT_ATTENUATION = new Vector3f(0.0f, 0.5f, 1.0f);
 	
 	// Rendering
 	private final Renderer floorRenderer;

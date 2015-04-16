@@ -781,13 +781,11 @@ public class MazeTowerCuts {
 	
 	public String toString() {
 		String s = "";
-		ArrayList<Point> NullArray = new ArrayList<Point>();
 		s += "<MazeTower width="+width+" height="+height+" depth="+depth+" origin=("+origin.x+","+origin.y+")>\n";//end=("+end.x+","+end.y+")
 		if(Version == 1){
 			for(int d = depth-1; d>=0; d--)
 				for(int i = 0; i < Tower[d].getMazes().length; i++)
 					for(int j = 0; j < Tower[d].getMazes()[i].length; j++){
-						Maze theMaze = Tower[d].getMazes()[i][j];
 						if(d == 0){
 							//s+= theMaze.toString(NullArray, toBottomMaze[d]);
 						}else if(d == depth-1){
@@ -830,5 +828,17 @@ public class MazeTowerCuts {
 
 	public Maze[] getMazes() {
 		return mazeToPrint;
+	}
+
+	public int getEndLevel() {
+		return endLevel;
+	}
+
+	public Point getOrigin() {
+		return origin;
+	}
+
+	public Point getEnd() {
+		return end;
 	}
 }

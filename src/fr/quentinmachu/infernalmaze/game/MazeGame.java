@@ -4,7 +4,6 @@ import java.awt.Point;
 
 import fr.quentinmachu.infernalmaze.game.objects.BallObject;
 import fr.quentinmachu.infernalmaze.game.objects.MazeTowerObject;
-import fr.quentinmachu.infernalmaze.maze.MazeTower;
 import fr.quentinmachu.infernalmaze.maze.MazeTowerCuts;
 import fr.quentinmachu.infernalmaze.ui.Camera;
 import fr.quentinmachu.infernalmaze.ui.Light;
@@ -39,7 +38,6 @@ public class MazeGame extends Game {
     private int currentLevel;
 	
     private float z_controller_time_threshold_timer;
-    private Point lastGate;
     
     public MazeGame(int windowWidth, int windowHeight, String inputControllerName, MazeTowerCuts maze) {
 		super("Infernal Maze", windowWidth, windowHeight, inputControllerName);
@@ -74,7 +72,7 @@ public class MazeGame extends Game {
     	
     	// Initialize the ball
     	ball = new BallObject(this);
-    	ball.setPosition(new Vector3f((float) (mazeTower.getMazeTower().getOrigin().getX() + 0.5f), (float) (mazeTower.getMazeTower().getOrigin().getY() + 0.5f), BallObject.getSphereRadius()));
+    	ball.setPosition(new Vector3f((float) (mazeTower.getMazeTower().getOrigin().getX() + 0.5f), (float) (mazeTower.getMazeTower().getOrigin().getY() + 0.5f), BallObject.SPHERE_RADIUS));
     }
 
     @Override
