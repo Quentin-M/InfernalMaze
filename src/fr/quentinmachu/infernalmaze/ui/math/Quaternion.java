@@ -67,8 +67,7 @@ public class Quaternion extends Vector4f {
 	 * @param angle the angle of the rotation
 	 */
 	public final void setFromAxisAngle(Vector3f axis, float angle) {
-		float n = (float) Math.sqrt(axis.x * axis.x + axis.y * axis.y + axis.z * axis.z);
-		float s = (float) (Math.sin(0.5 * angle) / n); // zero-div may occur.
+		float s = (float) (Math.sin(0.5 * angle));
 		
 		x = axis.x * s;
 		y = axis.y * s;
