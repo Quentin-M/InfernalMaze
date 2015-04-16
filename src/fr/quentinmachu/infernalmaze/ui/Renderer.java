@@ -301,13 +301,13 @@ public class Renderer {
 		Vector3f n1 = new Vector3f(u1.x*v1.z - u1.z*v1.y, u1.z*v1.x - u1.x*v1.z, u1.x*v1.y - u1.y*v1.x);
 		addVertex(x1, y1, z1, 0, 0, n1.x, n1.y, n1.z);
 		addVertex(x3, y3, z3, 1, 1, n1.x, n1.y, n1.z);
-		addVertex(x4, y4, z4, 0, 1, n1.x, n1.y, n1.z);
+		addVertex(x4, y4, z4, 1, 0, n1.x, n1.y, n1.z);
 		
 		Vector3f u2 = new Vector3f(x2-x1, y2-y1, z2-z1);
 		Vector3f v2 = new Vector3f(x3-x1, y3-y1, z3-z1);
 		Vector3f n2 = new Vector3f(u2.x*v2.z - u2.z*v2.y, u2.z*v2.x - u2.x*v2.z, u2.x*v2.y - u2.y*v2.x);
 		addVertex(x1, y1, z1, 0, 0, n2.x, n2.y, n2.z);
-		addVertex(x2, y2, z2, 1, 0, n2.x, n2.y, n2.z);
+		addVertex(x2, y2, z2, 0, 1, n2.x, n2.y, n2.z);
 		addVertex(x3, y3, z3, 1, 1, n2.x, n2.y, n2.z);
 	}
 
