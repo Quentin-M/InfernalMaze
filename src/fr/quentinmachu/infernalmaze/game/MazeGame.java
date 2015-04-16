@@ -55,15 +55,15 @@ public class MazeGame extends Game {
     	z_controller_time_threshold_timer = 0;
     	
     	// Initialize lighting
-    	mainLight = new Light(
-			new Vector4f(0.20f, 0.20f, 1, 0.0f),
-			new Vector4f(1.0f, 1.0f, 1.0f, 0.0f),
-			new Vector4f(1.0f, 1.0f, 1.0f, 0.0f),
+		mainLight = new Light(
+			new Vector4f(0.0f, 0.10f, 0.1f, 0.0f),
+			new Vector4f(0.70f, 0.70f, 0.75f, 0.0f),
+			new Vector4f(0.5f, 0.5f, 0.5f, 0.0f),
 			0.0f, 0.0f, 0.0f,
 			0.0f, 0.0f,
 			new Vector3f(0.0f, 0.0f, 0.0f)
-    	);
-    	ambientLight = new Vector3f(0.1f, 0.1f, 0.1f);
+	    );
+    	ambientLight = new Vector3f(0.15f, 0.05f, 0.05f);
     	
     	// Initialize camera
     	cameraLevel = currentLevel;
