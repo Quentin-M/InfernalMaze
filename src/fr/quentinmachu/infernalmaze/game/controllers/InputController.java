@@ -18,6 +18,7 @@ public abstract class InputController {
 	private float rz;
 	
 	private boolean button0;
+	private boolean button1;
 	
 	public abstract void init();
 	public abstract void poll();
@@ -70,10 +71,17 @@ public abstract class InputController {
 	}
 	
 	/**
-	 * @return the button1
+	 * @return the button0
 	 */
 	public boolean isButton0() {
 		return button0;
+	}
+	
+	/**
+	 * @return the button
+	 */
+	public boolean isButton1() {
+		return button1;
 	}
 	
 	/**
@@ -136,5 +144,12 @@ public abstract class InputController {
 	 */
 	public void setButton0(boolean button0) {
 		this.button0 = button0;
+	}
+	
+	/**
+	 * @param button0 the button0 to set
+	 */
+	public void setButton1(boolean button1) {
+		this.button1 = button1;
 	}
 }

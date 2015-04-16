@@ -6,6 +6,10 @@ import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_2;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_3;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
@@ -21,7 +25,7 @@ public class MouseController extends InputController {
 	
 	// Internal variables
 	private double mdx, mdy;
-	private boolean mb0, mb1;
+	private boolean mb0;
 	private GLFWCursorPosCallback cursorPosCallBack;
 	private GLFWScrollCallback scrollCallback;
 	private GLFWMouseButtonCallback mouseButtonCallback;
@@ -41,15 +45,14 @@ public class MouseController extends InputController {
 		// Set button0 + mb0 + mb1 callback
 		glfwSetMouseButtonCallback(game.getWindow(), mouseButtonCallback = new GLFWMouseButtonCallback() {
 			@Override
-			public void invoke(long window, int btn0, int btn1, int btn2) {
-				if(btn0==0 && btn1==1 && btn2==0) mb0 = true;
-				else mb0 = false;
-				
-				if(btn0==2 && btn1==1 && btn2==0) setButton0(true);
+			public void invoke(long window, int button, int action, int mods) {
+				if(button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) setButton0(true);
 				else setButton0(false);
 				
-				if(btn0==1 && btn1==1 && btn2==0) mb1 = true;
-				else mb1 = false;
+				if(button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS) setButton1(true);
+				else setButton1(false);
+				
+				mb0 = (button == GLFW_MOUSE_BUTTON_3 && action == GLFW_PRESS);
 			}
 		});
 		
@@ -66,14 +69,12 @@ public class MouseController extends InputController {
                 mdx = xpos;
                 mdy = ypos;
                 
-                if(!mb0 && !mb1) {
+                if(!mb0) {
             		setRy(getRy() - dx*ROTATION_SENSITIVITY);
             		setRx(getRx() + dy*ROTATION_SENSITIVITY);
                 } else if(mb0) {
                 	setX(getX() + dx*MOVEMENT_SENSITIVITY);
                 	setY(getY() + dy*MOVEMENT_SENSITIVITY);
-                } else if(mb1) {
-                	setRz(getRz() + dx*ROTATION_SENSITIVITY);
                 }
             }
         });
@@ -83,6 +84,7 @@ public class MouseController extends InputController {
 			@Override
 			public void invoke(long arg0, double xscroll, double yscroll) {
         		setZ((float) yscroll);
+        		setRz((float) (getRz() + xscroll*ROTATION_SENSITIVITY));
 			}
         });
 	}
@@ -92,10 +94,6 @@ public class MouseController extends InputController {
         if(!mb0) {
         	setX(getX()*MOVEMENT_RESET_SPEED);
         	setY(getY()*MOVEMENT_RESET_SPEED);
-        }
-        
-        if(!mb1) {
-        	setRz(getRz()*ROTATION_RESET_SPEED);
         }
 	}
 	

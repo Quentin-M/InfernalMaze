@@ -68,7 +68,8 @@ public class SpaceNavigatorController extends InputController {
                     	else setButton0(false);
                     	break;
                     case "1":
-                    	break;
+                    	if(component.getPollData()==1.0) setButton1(true);
+                    	else setButton1(false);
                 }
             }
         }
