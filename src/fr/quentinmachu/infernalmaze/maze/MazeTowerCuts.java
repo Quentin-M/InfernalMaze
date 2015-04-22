@@ -33,7 +33,8 @@ public class MazeTowerCuts {
 	}
 	
 	public MazeTowerCuts(int width, int height, int depth, int minSizeMazeWidth, int minSizeMazeHeight, Point origin) {
-		if(width<=0 || height<=0 || depth<1 || origin.x<0 || origin.x>=width || origin.y<0 || origin.y>=height)
+		if(depth > ((width + height)/3 -1)) throw new IllegalArgumentException();
+		if(width<=0 || height<=0 || depth<1 || origin.x<0 || origin.x>=width || origin.y<0 || origin.y>=height  || minSizeMazeWidth <= 0 || minSizeMazeHeight <= 0)
 			throw new IllegalArgumentException();
 		this.origin = origin;
 		this.width = width;
@@ -101,12 +102,24 @@ public class MazeTowerCuts {
 		while(depth < nbrXCuts + nbrYCuts +1){
 			int temp = ThreadLocalRandom.current().nextInt(0,2);
 			if(temp == 0){
-				nbrXCuts--;
+				if(nbrXCuts != 0){
+					nbrXCuts--;
+				}else{
+					nbrYCuts--;
+				}
 			}else{
-				nbrYCuts--;
+				if(nbrYCuts != 0){
+					nbrYCuts--;
+				}else{
+					nbrXCuts--;
+				}
 			}
 		}
 
+		if(depth == 1){
+			nbrXCuts = 0;
+			nbrYCuts = 0;
+		}
 		
 		final int[] xWidth = new int[nbrXCuts + 1];
 	    final int[] yHeight = new int[nbrYCuts + 1];
@@ -289,176 +302,6 @@ public class MazeTowerCuts {
 					//Case one both mazes are the same in term of size and emplacement
 					Node upperMaze = G.getNodesByLevel(i).get(j);
 					Node lowerMaze = G.getNodesByLevel(i+1).get(k);
-					/*
-					if(upperMaze.getTopLeft().getX()  == lowerMaze.getTopLeft().getX()  && 
-					   upperMaze.getTopLeft().getY()  == lowerMaze.getTopLeft().getY()  &&
-					   upperMaze.getBotRight().getX() == lowerMaze.getBotRight().getX() &&
-					   upperMaze.getBotRight().getY() == lowerMaze.getBotRight().getY()){
-						//Case one : fit perfectly
-						Point tp = tpFinding(upperMaze, lowerMaze);
-						if(tp.getX() != -1 && tp.getY() != -1) G.addVertice(upperMaze.getId(), lowerMaze.getId(), tp.getX(), tp.getY());
-					}
-					
-					if(upperMaze.getTopLeft().getX()  == lowerMaze.getTopLeft().getX()  && 
-					   upperMaze.getBotRight().getY() == lowerMaze.getBotRight().getY() &&
-					   upperMaze.getTopLeft().getY()  == lowerMaze.getTopLeft().getY()  &&
-					   upperMaze.getBotRight().getX() != lowerMaze.getBotRight().getX()
-					   ){
-							Point tp;
-							if(upperMaze.getBotRight().getX() > lowerMaze.getBotRight().getX()){
-								tp = tpFinding(lowerMaze, upperMaze);
-							}else{
-								tp = tpFinding(upperMaze, lowerMaze);
-							}
-							if(tp.getX() != -1 && tp.getY() != -1){
-								G.addVertice(upperMaze.getId(), lowerMaze.getId(), tp.getX(), tp.getY());
-							}else{
-								
-							}
-						}
-							
-					if(upperMaze.getBotRight().getX()  == lowerMaze.getBotRight().getX()  && 
-					   upperMaze.getBotRight().getY() == lowerMaze.getBotRight().getY()   &&
-					   upperMaze.getTopLeft().getY()  == lowerMaze.getTopLeft().getY()    &&
-					   upperMaze.getTopLeft().getX() != lowerMaze.getTopLeft().getX()){
-						Point tp;
-						if(upperMaze.getTopLeft().getX() < lowerMaze.getTopLeft().getX()){
-							tp = tpFinding(lowerMaze, upperMaze);
-						}else{
-							tp = tpFinding(upperMaze, lowerMaze);
-						}
-						if(tp.getX() != -1 && tp.getY() != -1){
-							G.addVertice(upperMaze.getId(), lowerMaze.getId(), tp.getX(), tp.getY());
-						}else{
-							
-						}
-					}
-					
-					if(upperMaze.getTopLeft().getX()  == lowerMaze.getTopLeft().getX()    && 
-					   upperMaze.getTopLeft().getY() == lowerMaze.getTopLeft().getY()     &&
-					   upperMaze.getBotRight().getX()  == lowerMaze.getBotRight().getX()  &&
-					   upperMaze.getBotRight().getY() != lowerMaze.getBotRight().getY()){
-						Point tp;
-						if(upperMaze.getBotRight().getY() > lowerMaze.getBotRight().getY()){
-							tp = tpFinding(lowerMaze, upperMaze);
-						}else{
-							tp = tpFinding(upperMaze, lowerMaze);
-						}
-						if(tp.getX() != -1 && tp.getY() != -1){
-							G.addVertice(upperMaze.getId(), lowerMaze.getId(), tp.getX(), tp.getY());
-						}else{
-							
-						}
-					}
-					
-					if(upperMaze.getBotRight().getX()  == lowerMaze.getBotRight().getX()  && 
-					   upperMaze.getBotRight().getY() == lowerMaze.getBotRight().getY()   &&
-					   upperMaze.getTopLeft().getX()  == lowerMaze.getTopLeft().getX()    &&
-					   upperMaze.getTopLeft().getY() != lowerMaze.getTopLeft().getY()){
-						Point tp;
-						if(upperMaze.getTopLeft().getY() < lowerMaze.getTopLeft().getY()){
-							tp = tpFinding(lowerMaze, upperMaze);
-						}else{
-							tp = tpFinding(upperMaze, lowerMaze);
-						}
-						if(tp.getX() != -1 && tp.getY() != -1){
-							G.addVertice(upperMaze.getId(), lowerMaze.getId(), tp.getX(), tp.getY());
-						}else{
-							
-						}
-					}
-					
-					
-					if(upperMaze.getBotRight().getX()  == lowerMaze.getBotRight().getX()  && 
-					   upperMaze.getTopLeft().getX() == lowerMaze.getTopLeft().getX() 	  &&
-					   upperMaze.getBotRight().getY()  != lowerMaze.getBotRight().getY()  &&
-					   upperMaze.getTopLeft().getY() != lowerMaze.getTopLeft().getY()){
-						//At this moment we just know they are on the same line
-						Point tp = null;
-						if(upperMaze.getBotRight().getY() < lowerMaze.getBotRight().getY() && 
-						   upperMaze.getTopLeft().getY()  > lowerMaze.getTopLeft().getY()){
-							tp = tpFinding(upperMaze,lowerMaze);
-						}else{
-							if(lowerMaze.getBotRight().getY() < upperMaze.getBotRight().getY() && 
-							   lowerMaze.getTopLeft().getY()  > upperMaze.getTopLeft().getY()){
-									tp = tpFinding(lowerMaze,upperMaze);
-							}else{
-								if(upperMaze.getTopLeft().getY() < lowerMaze.getTopLeft().getY() && upperMaze.getBotRight().getY() > lowerMaze.getTopLeft().getY()){
-									Point boundTopLeft  = lowerMaze.getTopLeft(); 
-									Point boundBotRight = upperMaze.getBotRight();
-									tp = tpFinding(lowerMaze,upperMaze,boundTopLeft,boundBotRight);
-									if(tp.getX() == -1 && tp.getY() == -1){
-										tp = tpRandom(lowerMaze, upperMaze, boundTopLeft, boundBotRight);
-									}
-								}else{
-									if(upperMaze.getTopLeft().getY() > lowerMaze.getTopLeft().getY() && upperMaze.getTopLeft().getY() < lowerMaze.getBotRight().getY()){
-										Point boundTopLeft  = upperMaze.getTopLeft(); 
-										Point boundBotRight = lowerMaze.getBotRight();
-										tp = tpFinding(lowerMaze,upperMaze,boundTopLeft,boundBotRight);
-										if(tp.getX() == -1 && tp.getY() == -1){
-											tp = tpRandom(lowerMaze, upperMaze, boundTopLeft, boundBotRight);
-										}
-									}
-								}
-							}
-						}
-						if(tp != null){
-							if(tp.getX() != -1 && tp.getY() != -1){
-								G.addVertice(upperMaze.getId(), lowerMaze.getId(), tp.getX(), tp.getY());
-							}else{
-								//They might not be any common parts
-							}
-						}else{
-						
-						}
-					}
-					
-					
-					
-					if(upperMaze.getBotRight().getY()  == lowerMaze.getBotRight().getY()  && 
-						upperMaze.getTopLeft().getY() == lowerMaze.getTopLeft().getY() 	  &&
-						upperMaze.getBotRight().getX()  != lowerMaze.getBotRight().getX() &&
-						upperMaze.getTopLeft().getX() != lowerMaze.getTopLeft().getX()){
-								//At this moment we just know they are on the same line
-								Point tp = null;
-								if(upperMaze.getBotRight().getX() < lowerMaze.getBotRight().getX() && 
-								   upperMaze.getTopLeft().getX()  > lowerMaze.getTopLeft().getX()){
-									tp = tpFinding(upperMaze,lowerMaze);
-								}else{
-									if(lowerMaze.getBotRight().getX() < upperMaze.getBotRight().getX() && 
-									   lowerMaze.getTopLeft().getX()  > upperMaze.getTopLeft().getX()){
-											tp = tpFinding(lowerMaze,upperMaze);
-									}else{
-										if(upperMaze.getTopLeft().getX() < lowerMaze.getTopLeft().getX() && upperMaze.getBotRight().getX() > lowerMaze.getTopLeft().getX()){
-											Point boundTopLeft  = lowerMaze.getTopLeft(); 
-											Point boundBotRight = upperMaze.getBotRight();
-											tp = tpFinding(lowerMaze,upperMaze,boundTopLeft,boundBotRight);
-											if(tp.getX() == -1 && tp.getY() == -1){
-												tp = tpRandom(lowerMaze, upperMaze, boundTopLeft, boundBotRight);
-											}
-										}else{
-											if(upperMaze.getTopLeft().getX() > lowerMaze.getTopLeft().getX() && upperMaze.getTopLeft().getX() < lowerMaze.getBotRight().getX()){
-												Point boundTopLeft  = upperMaze.getTopLeft(); 
-												Point boundBotRight = lowerMaze.getBotRight();
-												tp = tpFinding(lowerMaze,upperMaze,boundTopLeft,boundBotRight);
-												if(tp.getX() == -1 && tp.getY() == -1){
-													tp = tpRandom(lowerMaze, upperMaze, boundTopLeft, boundBotRight);
-												}
-											}
-										}
-									}
-								}
-								if(tp != null){
-									if(tp.getX() != -1 && tp.getY() != -1){
-										G.addVertice(upperMaze.getId(), lowerMaze.getId(), tp.getX(), tp.getY());
-									}else{
-										
-									}
-								}else{
-									
-								}
-							}
-					*/
 					Point topLeft = new Point(-1,-1);
 					Point botRight = new Point(-1,-1);
 					if(upperMaze.getTopLeft().getX() <= lowerMaze.getTopLeft().getX() && lowerMaze.getTopLeft().getX() <= upperMaze.getBotRight().getX()){
@@ -493,97 +336,9 @@ public class MazeTowerCuts {
 						}
 					}
 					if(topLeft.getX() != -1 && topLeft.getY() != -1 && botRight.getX() != -1 && botRight.getY() != -1){
-						Point tp = tpFinding(lowerMaze,upperMaze,topLeft,botRight);
+						Point tp = tpRandom(lowerMaze,upperMaze,topLeft,botRight);
 						G.addVertice(upperMaze.getId(), lowerMaze.getId(), tp.getX(), tp.getY());
 					}
-					
-						//We check one by one the 4 corners to find one not already used to use it for the new connection.
-						//Starting with the current maze. We will check the lowermaze case if the current has an available case
-						
-						
-						/*
-						boolean alreadyUsed = true;
-						for(int l = 0; l < upperMaze.getLinks().size(); l++){
-							 //First case the botRight one
-							if(upperMaze.getLink(l).getGate().getX() == upperMaze.getBotRight().getX() && upperMaze.getLink(l).getGate().getY() == upperMaze.getBotRight().getY()){
-								 //Is available for the upperMaze need to check about the lower one
-								for(int m = 0; m < lowerMaze.getLinks().size(); m++){
-									if(lowerMaze.getLink(m).getGate().getX() == upperMaze.getBotRight().getX() && lowerMaze.getLink(m).getGate().getY() == upperMaze.getBotRight().getY()){
-										alreadyUsed = true;
-									}else{
-										alreadyUsed = false;
-										G.addVertice(upperMaze.getId(), lowerMaze.getId(), upperMaze.getBotRight().getX(), upperMaze.getBotRight().getY());
-										break;
-									}
-								}
-								if(alreadyUsed == false) break;
-							}
-							//Second case the topLeft one
-							if(i != 0 && j != 0 && k != 0){ 
-								//Coz this is where we start. We cannot place one in (0,0) of top mazeLevel.
-								if(upperMaze.getLink(l).getGate().getX() == upperMaze.getTopLeft().getX() && upperMaze.getLink(l).getGate().getY() == upperMaze.getTopLeft().getY()){
-									 //Is available for the upperMaze need to check about the lower one
-									for(int m = 0; m < lowerMaze.getLinks().size(); m++){
-										if(lowerMaze.getLink(m).getGate().getX() == upperMaze.getTopLeft().getX() && lowerMaze.getLink(m).getGate().getY() == upperMaze.getTopLeft().getY()){
-											alreadyUsed = true;
-										}else{
-											alreadyUsed = false;
-											G.addVertice(upperMaze.getId(), lowerMaze.getId(), upperMaze.getTopLeft().getX(), upperMaze.getTopLeft().getY());
-											break;
-										}
-									}
-									if(alreadyUsed == false) break;
-								}
-							}
-							
-							//Third case the topRight one
-							if(upperMaze.getLink(l).getGate().getX() == upperMaze.getTopLeft().getX() && upperMaze.getLink(l).getGate().getY() == upperMaze.getBotRight().getY()){
-								 //Is available for the upperMaze need to check about the lower one
-								for(int m = 0; m < lowerMaze.getLinks().size(); m++){
-									if(lowerMaze.getLink(m).getGate().getX() == upperMaze.getTopLeft().getX() && lowerMaze.getLink(m).getGate().getY() == upperMaze.getBotRight().getY()){
-										alreadyUsed = true;
-										break;
-									}else{
-										alreadyUsed = false;
-										G.addVertice(upperMaze.getId(), lowerMaze.getId(), upperMaze.getTopLeft().getX(), upperMaze.getBotRight().getY());
-										break;
-									}
-								}
-								if(alreadyUsed == false) break;
-							}
-							
-							//Fourth case the botLeft one
-							if(upperMaze.getLink(l).getGate().getX() == upperMaze.getBotRight().getX() && upperMaze.getLink(l).getGate().getY() == upperMaze.getTopLeft().getY()){
-								 //Is available for the upperMaze need to check about the lower one
-								for(int m = 0; m < lowerMaze.getLinks().size(); m++){
-									if(lowerMaze.getLink(m).getGate().getX() == upperMaze.getBotRight().getX() && lowerMaze.getLink(m).getGate().getY() == upperMaze.getTopLeft().getY()){
-										alreadyUsed = true;
-									}else{
-										alreadyUsed = false;
-										G.addVertice(upperMaze.getId(), lowerMaze.getId(), upperMaze.getBotRight().getX(), upperMaze.getTopLeft().getY());
-										break;
-									}
-								}
-								if(alreadyUsed == false) break;
-							}
-							 //The last case, none works it's not normal. You're fucked
-						}
-					}else{
-						if(upperMaze.getTopLeft().getX() == lowerMaze.getTopLeft().getX() 
-								&& upperMaze.getTopLeft().getY() == lowerMaze.getTopLeft().getY()
-								&& upperMaze.getTopLeft().getY() == lowerMaze.getBotRight().getY()
-								&& upperMaze.getBotRight().getX() == lowerMaze.getBotRight().getX()){
-							//We check the case when we cutted the right side of a maze
-							//We are going to try to put it in the botLeft side of the maze or the topLeft one
-							boolean alreadyUsed = true;
-							for(int l = 0; l < upperMaze.getLinks().size(); l++){
-								
-							}
-						}else{
-							
-						}
-						
-					}*/
 				}
 			}
 		}
@@ -640,6 +395,8 @@ public class MazeTowerCuts {
 	Point tpFinding(Node maze1, Node maze2, Point topLeft, Point botRight){
 		boolean alreadyUsed = true;
 		Point tp = new Point(-1,-1);
+		
+		
 		ArrayList<Point> commonPartDeadEnds = new ArrayList<Point>();
 		for(int i = 0; i < maze1.getDeadEnds().size(); i++){
 			if(maze1.getDeadEnd(i).getX() >= topLeft.getX() && maze1.getDeadEnd(i).getX() <= botRight.getX() &&
@@ -647,12 +404,7 @@ public class MazeTowerCuts {
 				commonPartDeadEnds.add(maze1.getDeadEnd(i));
 			}
 		}
-		for(int i = 0; i < maze2.getDeadEnds().size(); i++){
-			if(maze2.getDeadEnd(i).getX() >= topLeft.getX() && maze2.getDeadEnd(i).getX() <= botRight.getX() &&
-				  maze2.getDeadEnd(i).getY() >= topLeft.getY() && maze2.getDeadEnd(i).getY() <= botRight.getY()){
-				commonPartDeadEnds.add(maze2.getDeadEnd(i));
-			}
-		}
+
 		if(commonPartDeadEnds.size() == 0){
 			commonPartDeadEnds.add(topLeft);
 			commonPartDeadEnds.add(botRight);
@@ -683,14 +435,12 @@ public class MazeTowerCuts {
 			
 			if(maze2.getLinks().size() != 0 && maze1.getLinks().size() != 0)
 			for(int l = 0; l < maze1.getLinks().size(); l++){
-				if(maze1.getLink(l).getGate().getX() != tp.getX() || maze1.getLink(l).getGate().getY() != tp.getY()){
 					for(int m = 0; m < maze2.getLinks().size(); m++){
-						if(maze2.getLink(m).getGate().getX() != tp.getX() || maze2.getLink(m).getGate().getY() != tp.getY()){
+						if((maze2.getLink(m).getGate().getX() != tp.getX() || maze2.getLink(m).getGate().getY() != tp.getY()) && (maze1.getLink(l).getGate().getX() != tp.getX() || maze1.getLink(l).getGate().getY() != tp.getY())){
 							alreadyUsed = false;
 							return tp;
 						}
 					}
-				}
 			}
 		}
 		tp = new Point(-1,-1);
@@ -703,10 +453,36 @@ public class MazeTowerCuts {
 		Point tp = new Point(-1,-1);
 		while(alreadyUsed == true){
 			tp.setLocation((double)ThreadLocalRandom.current().nextInt(topLeft.x,botRight.x+1),(double)ThreadLocalRandom.current().nextInt(topLeft.y,botRight.y+1));
+			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() == 0) return tp;
+			
+			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() != 0)
+				for(int m = 0; m < maze2.getLinks().size(); m++){
+					int maze2X = (int)maze2.getLink(m).getGate().getX();
+					int maze2Y = (int)maze2.getLink(m).getGate().getY();
+					if(maze2X != tp.getX() || maze2Y != tp.getY()){
+						alreadyUsed = false;
+						return tp;
+					}
+				}
+				
+			if(maze2.getLinks().size()== 0 && maze1.getLinks().size() != 0)
 			for(int l = 0; l < maze1.getLinks().size(); l++){
-				if(maze1.getLink(l).getGate().getX() != tp.getX() || maze1.getLink(l).getGate().getY() != tp.getY()){
+				int maze1X = (int)maze1.getLink(l).getGate().getX();
+				int maze1Y = (int)maze1.getLink(l).getGate().getY();
+				if(maze1X != tp.getX() || maze1Y != tp.getY()){
+					return tp;
+				}
+			}
+				
+			if(maze1.getLinks().size() != 0 && maze2.getLinks().size() != 0)
+			for(int l = 0; l < maze1.getLinks().size(); l++){
+				int maze1X = (int)maze1.getLink(l).getGate().getX();
+				int maze1Y = (int)maze1.getLink(l).getGate().getY();
+				if(maze1X != tp.getX() || maze1Y != tp.getY()){
 					for(int m = 0; m < maze2.getLinks().size(); m++){
-						if(maze2.getLink(m).getGate().getX() != tp.getX() || maze2.getLink(m).getGate().getY() != tp.getY()){
+						int maze2X = (int)maze2.getLink(m).getGate().getX();
+						int maze2Y = (int)maze2.getLink(m).getGate().getY();
+						if(maze2X != tp.getX() || maze2Y != tp.getY()){
 							alreadyUsed = false;
 							return tp;
 						}
@@ -759,8 +535,12 @@ public class MazeTowerCuts {
 			System.out.println("Node "+i+" :"+dist[i]);
 		}
 		this.endLevel = G.getNode(tempId).getLevel();
+		//System.out.println("endLevel : "+endLevel+" avec comme distance : "+temp);
 		this.end.setLocation((double)ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().x,G.getNode(tempId).getBotRight().x+1),(double)ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().y,G.getNode(tempId).getBotRight().y+1));
-		System.out.println("");
+		//System.out.println("");
+		if(this.depth == 1){
+			this.end.setLocation(Tower[0].getMazes()[0][0].getEnd());
+		}
 	}
 	
 	void getVerticeByLevel(){
