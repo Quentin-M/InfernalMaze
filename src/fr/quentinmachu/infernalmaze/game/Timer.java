@@ -26,8 +26,7 @@ package fr.quentinmachu.infernalmaze.game;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
 /**
- * The timer class is used for calculating delta time and also FPS and UPS
- * calculation.
+ * The timer class is used for calculating delta time and also FPS and UPS calculation.
  *
  * @author Heiko Brumme
  */
@@ -62,7 +61,7 @@ public class Timer {
      * Initializes the timer.
      */
     public void init() {
-        lastLoopTime = getTime();
+	lastLoopTime = getTime();
     }
 
     /**
@@ -71,7 +70,7 @@ public class Timer {
      * @return System time in seconds
      */
     public double getTime() {
-        return glfwGetTime();
+	return glfwGetTime();
     }
 
     /**
@@ -80,40 +79,40 @@ public class Timer {
      * @return Delta time in seconds
      */
     public float getDelta() {
-        double time = getTime();
-        float delta = (float) (time - lastLoopTime);
-        lastLoopTime = time;
-        timeCount += delta;
-        return delta;
+	double time = getTime();
+	float delta = (float) (time - lastLoopTime);
+	lastLoopTime = time;
+	timeCount += delta;
+	return delta;
     }
 
     /**
      * Updates the FPS counter.
      */
     public void updateFPS() {
-        fpsCount++;
+	fpsCount++;
     }
 
     /**
      * Updates the UPS counter.
      */
     public void updateUPS() {
-        upsCount++;
+	upsCount++;
     }
 
     /**
      * Updates FPS and UPS if a whole second has passed.
      */
     public void update() {
-        if (timeCount > 1f) {
-            fps = fpsCount;
-            fpsCount = 0;
+	if (timeCount > 1f) {
+	    fps = fpsCount;
+	    fpsCount = 0;
 
-            ups = upsCount;
-            upsCount = 0;
+	    ups = upsCount;
+	    upsCount = 0;
 
-            timeCount -= 1f;
-        }
+	    timeCount -= 1f;
+	}
     }
 
     /**
@@ -122,7 +121,7 @@ public class Timer {
      * @return Frames per second
      */
     public int getFPS() {
-        return fps > 0 ? fps : fpsCount;
+	return fps > 0 ? fps : fpsCount;
     }
 
     /**
@@ -131,7 +130,7 @@ public class Timer {
      * @return Updates per second
      */
     public int getUPS() {
-        return ups > 0 ? ups : upsCount;
+	return ups > 0 ? ups : upsCount;
     }
 
     /**
@@ -140,6 +139,6 @@ public class Timer {
      * @return System time of the last loop
      */
     public double getLastLoopTime() {
-        return lastLoopTime;
+	return lastLoopTime;
     }
 }

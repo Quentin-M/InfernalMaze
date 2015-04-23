@@ -46,36 +46,36 @@ public class Shader {
     private final int id;
 
     /**
-     * Creates a shader with specified type and source and compiles it. The type
-     * in the tutorial should be either <code>GL_VERTEX_SHADER</code> or
-     * <code>GL_FRAGMENT_SHADER</code>.
+     * Creates a shader with specified type and source and compiles it. The type in the tutorial should be either <code>GL_VERTEX_SHADER</code> or <code>GL_FRAGMENT_SHADER</code>.
      *
-     * @param type Type of the shader
-     * @param source Source of the shader
+     * @param type
+     *            Type of the shader
+     * @param source
+     *            Source of the shader
      */
     public Shader(int type, CharSequence source) {
-        id = glCreateShader(type);
-        glShaderSource(id, source);
-        glCompileShader(id);
+	id = glCreateShader(type);
+	glShaderSource(id, source);
+	glCompileShader(id);
 
-        checkStatus();
+	checkStatus();
     }
 
     /**
      * Checks if the shader was compiled successfully.
      */
     private void checkStatus() {
-        int status = glGetShaderi(id, GL_COMPILE_STATUS);
-        if (status != GL_TRUE) {
-            throw new RuntimeException(glGetShaderInfoLog(id));
-        }
+	int status = glGetShaderi(id, GL_COMPILE_STATUS);
+	if (status != GL_TRUE) {
+	    throw new RuntimeException(glGetShaderInfoLog(id));
+	}
     }
 
     /**
      * Deletes the shader.
      */
     public void delete() {
-        glDeleteShader(id);
+	glDeleteShader(id);
     }
 
     /**
@@ -84,31 +84,31 @@ public class Shader {
      * @return Handle of this shader
      */
     public int getID() {
-        return id;
+	return id;
     }
 
     /**
      * Load shader from file.
      *
-     * @param type Type of the shader
-     * @param path File path of the shader
+     * @param type
+     *            Type of the shader
+     * @param path
+     *            File path of the shader
      * @return Shader from specified file
      */
     public static Shader loadShader(int type, String path) {
-        StringBuilder builder = new StringBuilder();
+	StringBuilder builder = new StringBuilder();
 
-        try (InputStream in = new FileInputStream(path);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to load a shader file!"
-                    + System.lineSeparator() + ex.getMessage());
-        }
+	try (InputStream in = new FileInputStream(path); BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+	    String line;
+	    while ((line = reader.readLine()) != null) {
+		builder.append(line).append("\n");
+	    }
+	} catch (IOException ex) {
+	    throw new RuntimeException("Failed to load a shader file!" + System.lineSeparator() + ex.getMessage());
+	}
 
-        CharSequence source = builder.toString();
-        return new Shader(type, source);
+	CharSequence source = builder.toString();
+	return new Shader(type, source);
     }
 }

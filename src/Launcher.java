@@ -15,6 +15,6 @@ public class Launcher {
 
 	Point origin = new Point(ThreadLocalRandom.current().nextInt(width), ThreadLocalRandom.current().nextInt(height));
 
-	new MazeGame(1650, 1050, "SpaceNavigatorController", new MazeTowerCuts(width, height, depth, minSizeWidth, minSizeHeight, origin)).run();
+	new MazeGame(1680, 1050, "SpaceNavigatorController", new MazeTowerCuts(width, height, depth, minSizeWidth, minSizeHeight, origin)).run();
     }
 }

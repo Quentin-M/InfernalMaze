@@ -41,21 +41,21 @@ public class VertexArrayObject {
      * Creates a Vertex Array Object (VAO).
      */
     public VertexArrayObject() {
-        id = glGenVertexArrays();
+	id = glGenVertexArrays();
     }
 
     /**
      * Binds the VAO.
      */
     public void bind() {
-        glBindVertexArray(id);
+	glBindVertexArray(id);
     }
 
     /**
      * Deletes the VAO.
      */
     public void delete() {
-        glDeleteVertexArrays(id);
+	glDeleteVertexArrays(id);
     }
 
     /**
@@ -64,6 +64,6 @@ public class VertexArrayObject {
      * @return Handle of the VAO
      */
     public int getID() {
-        return id;
+	return id;
     }
 }
