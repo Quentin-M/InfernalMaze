@@ -346,20 +346,27 @@ public class MazeTowerCuts {
 
 	Point tpFinding(Node smallerMaze, Node biggerMaze){
 		boolean alreadyUsed = true;
+		int deadEndSize = smallerMaze.getDeadEnds().size();
 		while(alreadyUsed == true){
 			int rand = ThreadLocalRandom.current().nextInt(0,smallerMaze.getDeadEnds().size());
 			Point tp = smallerMaze.getDeadEnd(rand);
-			alreadyUsed = false;
+			deadEndSize--;
+			if(deadEndSize <= 0){
+				tp.setLocation((double)ThreadLocalRandom.current().nextInt(smallerMaze.getTopLeft().x,smallerMaze.getBotRight().x+1),(double)ThreadLocalRandom.current().nextInt(smallerMaze.getTopLeft().y,smallerMaze.getBotRight().y+1));
+			}
 			if(smallerMaze.getLinks().size() == 0 && biggerMaze.getLinks().size() == 0) return tp;
 			if(smallerMaze.getLinks().size() == 0 && biggerMaze.getLinks().size() != 0){
+				alreadyUsed = false;
 				for(int m = 0; m < biggerMaze.getLinks().size(); m++){
 					if(biggerMaze.getLink(m).getGate().getX() == tp.getX() && biggerMaze.getLink(m).getGate().getY() == tp.getY()){
 						alreadyUsed = true;
+						break;
 					}
 				}
 				if(alreadyUsed == false) return tp;
 			}
 			if(smallerMaze.getLinks().size() != 0 && biggerMaze.getLinks().size() == 0){
+				alreadyUsed = false;
 				for(int m = 0; m < smallerMaze.getLinks().size(); m++){
 					if(smallerMaze.getLink(m).getGate().getX() == tp.getX() && smallerMaze.getLink(m).getGate().getY() == tp.getY()){
 						alreadyUsed = true;
@@ -369,6 +376,7 @@ public class MazeTowerCuts {
 				if(alreadyUsed != true) return tp;
 			}
 			if(smallerMaze.getLinks().size() != 0 && biggerMaze.getLinks().size() != 0){
+				alreadyUsed = false;
 				for(int l = 0; l < smallerMaze.getLinks().size(); l++){
 					if(smallerMaze.getLink(l).getGate().getX() != tp.getX() || smallerMaze.getLink(l).getGate().getY() != tp.getY()){
 						for(int m = 0; m < biggerMaze.getLinks().size(); m++){
@@ -389,8 +397,6 @@ public class MazeTowerCuts {
 	Point tpFinding(Node maze1, Node maze2, Point topLeft, Point botRight){
 		boolean alreadyUsed = true;
 		Point tp = new Point(-1,-1);
-		
-		
 		ArrayList<Point> commonPartDeadEnds = new ArrayList<Point>();
 		for(int i = 0; i < maze1.getDeadEnds().size(); i++){
 			if(maze1.getDeadEnd(i).getX() >= topLeft.getX() && maze1.getDeadEnd(i).getX() <= botRight.getX() &&
@@ -398,20 +404,18 @@ public class MazeTowerCuts {
 				commonPartDeadEnds.add(maze1.getDeadEnd(i));
 			}
 		}
-
-		if(commonPartDeadEnds.size() == 0){
-			commonPartDeadEnds.add(topLeft);
-			commonPartDeadEnds.add(botRight);
-			Point temp = new Point(topLeft.x, botRight.y);
-			commonPartDeadEnds.add(temp);
-			temp = new Point(botRight.x, topLeft.y);
-			commonPartDeadEnds.add(temp);
-		}
+		
 		while(alreadyUsed == true){
-			tp = commonPartDeadEnds.get(ThreadLocalRandom.current().nextInt(0,commonPartDeadEnds.size()));
-			alreadyUsed = false;
+			if(commonPartDeadEnds.size() <= 0){
+				tp.setLocation((double)ThreadLocalRandom.current().nextInt(topLeft.x,botRight.x+1),(double)ThreadLocalRandom.current().nextInt(topLeft.y,botRight.y+1));
+			}else{
+				int rand = ThreadLocalRandom.current().nextInt(0,commonPartDeadEnds.size());
+				tp = commonPartDeadEnds.get(rand);
+				commonPartDeadEnds.remove(rand);
+			}
 			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() == 0) return tp;
 			if(maze2.getLinks().size() == 0 && maze1.getLinks().size() != 0){
+				alreadyUsed = false;
 				for(int m = 0; m < maze1.getLinks().size(); m++){
 					if(maze1.getLink(m).getGate().getX() == tp.getX() && maze1.getLink(m).getGate().getY() == tp.getY()){
 						alreadyUsed = true;
@@ -421,6 +425,7 @@ public class MazeTowerCuts {
 			}
 			
 			if(maze2.getLinks().size() != 0 && maze1.getLinks().size() == 0){
+				alreadyUsed = false;
 				for(int m = 0; m < maze2.getLinks().size(); m++){
 					if(maze2.getLink(m).getGate().getX() == tp.getX() && maze2.getLink(m).getGate().getY() == tp.getY()){
 						alreadyUsed = true;
@@ -430,6 +435,7 @@ public class MazeTowerCuts {
 			}
 			
 			if(maze2.getLinks().size() != 0 && maze1.getLinks().size() != 0){
+				alreadyUsed = false;
 				for(int l = 0; l < maze1.getLinks().size(); l++){
 						for(int m = 0; m < maze2.getLinks().size(); m++){
 							if((maze2.getLink(m).getGate().getX() == tp.getX() && maze2.getLink(m).getGate().getY() == tp.getY()) || (maze1.getLink(l).getGate().getX() == tp.getX() && maze1.getLink(l).getGate().getY() == tp.getY())){
@@ -451,11 +457,11 @@ public class MazeTowerCuts {
 		boolean alreadyUsed = true;
 		Point tp = new Point(-1,-1);
 		while(alreadyUsed == true){
-			alreadyUsed = false;
 			tp.setLocation((double)ThreadLocalRandom.current().nextInt(topLeft.x,botRight.x+1),(double)ThreadLocalRandom.current().nextInt(topLeft.y,botRight.y+1));
 			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() == 0) return tp;
 			
 			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() != 0){
+				alreadyUsed = false;
 				for(int m = 0; m < maze2.getLinks().size(); m++){
 					int maze2X = (int)maze2.getLink(m).getGate().getX();
 					int maze2Y = (int)maze2.getLink(m).getGate().getY();
@@ -467,6 +473,7 @@ public class MazeTowerCuts {
 			}
 				
 			if(maze2.getLinks().size()== 0 && maze1.getLinks().size() != 0){
+				alreadyUsed = false;
 				for(int l = 0; l < maze1.getLinks().size(); l++){
 					int maze1X = (int)maze1.getLink(l).getGate().getX();
 					int maze1Y = (int)maze1.getLink(l).getGate().getY();
@@ -478,6 +485,7 @@ public class MazeTowerCuts {
 			}
 				
 			if(maze1.getLinks().size() != 0 && maze2.getLinks().size() != 0){
+				alreadyUsed = false;
 				for(int l = 0; l < maze1.getLinks().size(); l++){
 					int maze1X = (int)maze1.getLink(l).getGate().getX();
 					int maze1Y = (int)maze1.getLink(l).getGate().getY();
@@ -503,13 +511,18 @@ public class MazeTowerCuts {
 		int pred = 0;
 		int inf = Integer.MAX_VALUE;
 		int[] dist = new int[G.getNodeCount()];
-		for(int i = 1; i < G.getNodeCount(); i++){
-			dist[i] = inf;
-		}
-		dist[0] = 0;
 		ArrayList<Node> Q = new ArrayList<Node>();
 		ArrayList<Integer> Visited = new ArrayList<Integer>();
-		Visited.add(0);
+		for(int i = 0; i < G.getNodeCount(); i++){
+			dist[i] = inf;
+			if(G.getNode(i).getLevel() == 0){
+				if(G.getNode(i).getTopLeft().getX() <= origin.getX() && G.getNode(i).getBotRight().getX() >= origin.getX() && G.getNode(i).getTopLeft().getY() <= origin.getY() && G.getNode(i).getBotRight().getY() >= origin.getY()){
+					dist[i] = 0;
+					Visited.add(i);
+				}
+			}
+		}
+		
 		for(int i = 0; i < G.getNode(0).getNextNodes().size(); i++){
 			Q.add(G.getNode(G.getNode(0).getNextNodes().get(i)));
 		}
@@ -540,7 +553,7 @@ public class MazeTowerCuts {
 			System.out.println("Node "+i+" :"+dist[i]);
 		}
 		this.endLevel = G.getNode(tempId).getLevel();
-		//System.out.println("endLevel : "+endLevel+" avec comme distance : "+temp);
+		System.out.println("endLevel : "+endLevel+" avec comme distance : "+temp);
 		this.end.setLocation((double)ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().x,G.getNode(tempId).getBotRight().x+1),(double)ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().y,G.getNode(tempId).getBotRight().y+1));
 		//System.out.println("");
 		if(this.depth == 1){
