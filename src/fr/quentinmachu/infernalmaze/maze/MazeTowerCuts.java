@@ -246,17 +246,7 @@ public class MazeTowerCuts {
 			if(XorY == 0) xCutsToPick.remove(posCutToLose);
 			if(XorY == 1) yCutsToPick.remove(posCutToLose);
 		}
-			/*Pour les arcs il faut faire des if avec la structure de tableau 	[]->[]->[][]
-			 * 																		[]->[][]
-			 * 																		[]->[][]
-			 * 																		[]->[][]
-			 * 																	[]->[]->[][]
-			 * 																	[]->[]->[][]
-			 * Il faut remonter vers le niveau du dessus.
-			 * Si c'est le premier c'est bon sinon il faut tester l'indice comme dans la fonction de merge de labi et tableau
-			 * Une fois l'emplacement de la fin du maze déterminé et son début on peut déterminer si oui ou non il y a superposition
-			 * Tester X et Y !!!!!!! EN MÊME TEMPS	
-			 */
+		
 		for(int i = 0; i < depth; i++){
 			int height = 0;
 			int width = 0;
@@ -336,7 +326,7 @@ public class MazeTowerCuts {
 						}
 					}
 					if(topLeft.getX() != -1 && topLeft.getY() != -1 && botRight.getX() != -1 && botRight.getY() != -1){
-						Point tp = tpRandom(lowerMaze,upperMaze,topLeft,botRight);
+						Point tp = tpFinding(lowerMaze,upperMaze,topLeft,botRight);
 						G.addVertice(upperMaze.getId(), lowerMaze.getId(), tp.getX(), tp.getY());
 					}
 				}
@@ -359,33 +349,37 @@ public class MazeTowerCuts {
 		while(alreadyUsed == true){
 			int rand = ThreadLocalRandom.current().nextInt(0,smallerMaze.getDeadEnds().size());
 			Point tp = smallerMaze.getDeadEnd(rand);
+			alreadyUsed = false;
 			if(smallerMaze.getLinks().size() == 0 && biggerMaze.getLinks().size() == 0) return tp;
 			if(smallerMaze.getLinks().size() == 0 && biggerMaze.getLinks().size() != 0){
 				for(int m = 0; m < biggerMaze.getLinks().size(); m++){
-					if(biggerMaze.getLink(m).getGate().getX() != tp.getX() || biggerMaze.getLink(m).getGate().getY() != tp.getY()){
-						alreadyUsed = false;
-						return tp;
+					if(biggerMaze.getLink(m).getGate().getX() == tp.getX() && biggerMaze.getLink(m).getGate().getY() == tp.getY()){
+						alreadyUsed = true;
 					}
 				}
+				if(alreadyUsed == false) return tp;
 			}
 			if(smallerMaze.getLinks().size() != 0 && biggerMaze.getLinks().size() == 0){
 				for(int m = 0; m < smallerMaze.getLinks().size(); m++){
-					if(smallerMaze.getLink(m).getGate().getX() != tp.getX() || smallerMaze.getLink(m).getGate().getY() != tp.getY()){
-						alreadyUsed = false;
-						return tp;
+					if(smallerMaze.getLink(m).getGate().getX() == tp.getX() && smallerMaze.getLink(m).getGate().getY() == tp.getY()){
+						alreadyUsed = true;
+						break;
 					}
 				}
+				if(alreadyUsed != true) return tp;
 			}
-			if(smallerMaze.getLinks().size() != 0 && biggerMaze.getLinks().size() != 0)
-			for(int l = 0; l < smallerMaze.getLinks().size(); l++){
-				if(smallerMaze.getLink(l).getGate().getX() != tp.getX() || smallerMaze.getLink(l).getGate().getY() != tp.getY()){
-					for(int m = 0; m < biggerMaze.getLinks().size(); m++){
-						if(biggerMaze.getLink(m).getGate().getX() != tp.getX() || biggerMaze.getLink(m).getGate().getY() != tp.getY()){
-							alreadyUsed = false;
-							return tp;
+			if(smallerMaze.getLinks().size() != 0 && biggerMaze.getLinks().size() != 0){
+				for(int l = 0; l < smallerMaze.getLinks().size(); l++){
+					if(smallerMaze.getLink(l).getGate().getX() != tp.getX() || smallerMaze.getLink(l).getGate().getY() != tp.getY()){
+						for(int m = 0; m < biggerMaze.getLinks().size(); m++){
+							if(biggerMaze.getLink(m).getGate().getX() != tp.getX() || biggerMaze.getLink(m).getGate().getY() != tp.getY()){
+								alreadyUsed = true;
+								break;
+							}
 						}
 					}
 				}
+				if(alreadyUsed != true) return tp;
 			}
 		}
 		Point tp = new Point(-1,-1);
@@ -415,32 +409,37 @@ public class MazeTowerCuts {
 		}
 		while(alreadyUsed == true){
 			tp = commonPartDeadEnds.get(ThreadLocalRandom.current().nextInt(0,commonPartDeadEnds.size()));
+			alreadyUsed = false;
 			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() == 0) return tp;
 			if(maze2.getLinks().size() == 0 && maze1.getLinks().size() != 0){
 				for(int m = 0; m < maze1.getLinks().size(); m++){
-					if(maze1.getLink(m).getGate().getX() != tp.getX() || maze1.getLink(m).getGate().getY() != tp.getY()){
-						alreadyUsed = false;
-						return tp;
+					if(maze1.getLink(m).getGate().getX() == tp.getX() && maze1.getLink(m).getGate().getY() == tp.getY()){
+						alreadyUsed = true;
 					}
 				}
-			}
-			if(maze2.getLinks().size() != 0 && maze1.getLinks().size() == 0){
-				for(int m = 0; m < maze2.getLinks().size(); m++){
-					if(maze2.getLink(m).getGate().getX() != tp.getX() || maze2.getLink(m).getGate().getY() != tp.getY()){
-						alreadyUsed = false;
-						return tp;
-					}
-				}
+				if(alreadyUsed != true) return tp;
 			}
 			
-			if(maze2.getLinks().size() != 0 && maze1.getLinks().size() != 0)
-			for(int l = 0; l < maze1.getLinks().size(); l++){
-					for(int m = 0; m < maze2.getLinks().size(); m++){
-						if((maze2.getLink(m).getGate().getX() != tp.getX() || maze2.getLink(m).getGate().getY() != tp.getY()) && (maze1.getLink(l).getGate().getX() != tp.getX() || maze1.getLink(l).getGate().getY() != tp.getY())){
-							alreadyUsed = false;
-							return tp;
-						}
+			if(maze2.getLinks().size() != 0 && maze1.getLinks().size() == 0){
+				for(int m = 0; m < maze2.getLinks().size(); m++){
+					if(maze2.getLink(m).getGate().getX() == tp.getX() && maze2.getLink(m).getGate().getY() == tp.getY()){
+						alreadyUsed = true;
 					}
+				}
+				if(alreadyUsed != true) return tp;
+			}
+			
+			if(maze2.getLinks().size() != 0 && maze1.getLinks().size() != 0){
+				for(int l = 0; l < maze1.getLinks().size(); l++){
+						for(int m = 0; m < maze2.getLinks().size(); m++){
+							if((maze2.getLink(m).getGate().getX() == tp.getX() && maze2.getLink(m).getGate().getY() == tp.getY()) || (maze1.getLink(l).getGate().getX() == tp.getX() && maze1.getLink(l).getGate().getY() == tp.getY())){
+								alreadyUsed = true;
+							}
+						}
+				}
+				if(alreadyUsed != true){
+					return tp;
+				}
 			}
 		}
 		tp = new Point(-1,-1);
@@ -452,42 +451,48 @@ public class MazeTowerCuts {
 		boolean alreadyUsed = true;
 		Point tp = new Point(-1,-1);
 		while(alreadyUsed == true){
+			alreadyUsed = false;
 			tp.setLocation((double)ThreadLocalRandom.current().nextInt(topLeft.x,botRight.x+1),(double)ThreadLocalRandom.current().nextInt(topLeft.y,botRight.y+1));
 			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() == 0) return tp;
 			
-			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() != 0)
+			if(maze1.getLinks().size() == 0 && maze2.getLinks().size() != 0){
 				for(int m = 0; m < maze2.getLinks().size(); m++){
 					int maze2X = (int)maze2.getLink(m).getGate().getX();
 					int maze2Y = (int)maze2.getLink(m).getGate().getY();
-					if(maze2X != tp.getX() || maze2Y != tp.getY()){
-						alreadyUsed = false;
-						return tp;
+					if(maze2X == tp.getX()+topLeft.getX() && maze2Y == tp.getY()+topLeft.getY()){
+						alreadyUsed = true;
 					}
 				}
-				
-			if(maze2.getLinks().size()== 0 && maze1.getLinks().size() != 0)
-			for(int l = 0; l < maze1.getLinks().size(); l++){
-				int maze1X = (int)maze1.getLink(l).getGate().getX();
-				int maze1Y = (int)maze1.getLink(l).getGate().getY();
-				if(maze1X != tp.getX() || maze1Y != tp.getY()){
-					return tp;
-				}
+				if(alreadyUsed != true) return tp;
 			}
 				
-			if(maze1.getLinks().size() != 0 && maze2.getLinks().size() != 0)
-			for(int l = 0; l < maze1.getLinks().size(); l++){
-				int maze1X = (int)maze1.getLink(l).getGate().getX();
-				int maze1Y = (int)maze1.getLink(l).getGate().getY();
-				if(maze1X != tp.getX() || maze1Y != tp.getY()){
-					for(int m = 0; m < maze2.getLinks().size(); m++){
-						int maze2X = (int)maze2.getLink(m).getGate().getX();
-						int maze2Y = (int)maze2.getLink(m).getGate().getY();
-						if(maze2X != tp.getX() || maze2Y != tp.getY()){
-							alreadyUsed = false;
-							return tp;
-						}
+			if(maze2.getLinks().size()== 0 && maze1.getLinks().size() != 0){
+				for(int l = 0; l < maze1.getLinks().size(); l++){
+					int maze1X = (int)maze1.getLink(l).getGate().getX();
+					int maze1Y = (int)maze1.getLink(l).getGate().getY();
+					if(maze1X == tp.getX()+topLeft.getX() && maze1Y == tp.getY()+topLeft.getY()){
+						alreadyUsed = true;
 					}
 				}
+				if(alreadyUsed == false) return tp;
+			}
+				
+			if(maze1.getLinks().size() != 0 && maze2.getLinks().size() != 0){
+				for(int l = 0; l < maze1.getLinks().size(); l++){
+					int maze1X = (int)maze1.getLink(l).getGate().getX();
+					int maze1Y = (int)maze1.getLink(l).getGate().getY();
+					if(maze1X == tp.getX()+topLeft.getX() && maze1Y == tp.getY()+topLeft.getY()){
+						alreadyUsed = true;
+					}
+				}
+				for(int m = 0; m < maze2.getLinks().size(); m++){
+					int maze2X = (int)maze2.getLink(m).getGate().getX();
+					int maze2Y = (int)maze2.getLink(m).getGate().getY();
+					if(maze2X == tp.getX() && maze2Y == tp.getY()){
+						alreadyUsed = true;
+					}
+				}
+				if(alreadyUsed != true) return tp;
 			}
 		}
 		tp = new Point(-1,-1);
