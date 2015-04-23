@@ -13,12 +13,12 @@ public class MazeTowerCuts {
     private int depth;
     private int minSizeMazeWidth;
     private int minSizeMazeHeight;
-
     private Point origin;
     private Point end;
     private int endLevel;
 
     private int Version = 0;
+    private int DEBUG;
     public MazeLevel[] Tower;
     public Graph G;
 
@@ -45,13 +45,14 @@ public class MazeTowerCuts {
 	this.minSizeMazeWidth = minSizeMazeWidth;
 	this.end = new Point(width, height);
 	this.G = new Graph();
-	// Step 1 on d�termine le premier lvl de coupes � effectuer
-	// Step 2 on Cr�er depth tableau 2D pour stocker chaque maze.
-	// Step 3 on merge chaque maze pour un m�me level
-	// Step 4 on cr�er un graph avec un Node pour chaque petit maze
-	// Step 5 on Cr�er les connexions entre chaque node
-	// Step 6 on g�n�re les entr�e sorties en parcourant le graph
-	// Step 7 on d�termine un chemin.
+	this.DEBUG = 0;
+	// Step 1 on determine le premier lvl de coupes e effectuer
+	// Step 2 on Creer depth tableau 2D pour stocker chaque maze.
+	// Step 3 on merge chaque maze pour un meme level
+	// Step 4 on creer un graph avec un Node pour chaque petit maze
+	// Step 5 on Creer les connexions entre chaque node
+	// Step 6 on genere les entree sorties en parcourant le graph
+	// Step 7 on determine un chemin.
 	generate();
 	mazeToPrint = new Maze[Tower.length];
 	for (int i = 0; i < Tower.length; i++) {
@@ -61,11 +62,27 @@ public class MazeTowerCuts {
 	pathFinding();
 
 	getVerticeByLevel();
-	for (int i = 0; i < this.depth; i++) {
-	    for (int j = 0; j < mazeToPrint[i].getUpGates().size(); j++)
-		System.out.println("Tp vers le haut au niveau " + i + " : " + mazeToPrint[i].getUpGates().get(j).getX() + "," + mazeToPrint[i].getUpGates().get(j).getY());
-	    for (int j = 0; j < mazeToPrint[i].getDownGates().size(); j++)
-		System.out.println("Tp vers le bas au niveau " + i + " : " + mazeToPrint[i].getDownGates().get(j).getX() + "," + mazeToPrint[i].getDownGates().get(j).getY());
+	if(this.DEBUG == 1){
+		int[] teleporteursUp = new int[depth];
+		int[] teleporteursDown = new int[this.depth];
+		for (int i = 0; i < this.depth; i++) {
+			teleporteursUp[i] = mazeToPrint[i].getUpGates().size();
+		    for (int j = 0; j < mazeToPrint[i].getUpGates().size(); j++)
+			System.out.println("Tp vers le haut au niveau " + i + " : " + mazeToPrint[i].getUpGates().get(j).getX() + "," + mazeToPrint[i].getUpGates().get(j).getY());
+		    teleporteursDown[i] = mazeToPrint[i].getDownGates().size();
+		    for (int j = 0; j < mazeToPrint[i].getDownGates().size(); j++)
+			System.out.println("Tp vers le bas au niveau " + i + " : " + mazeToPrint[i].getDownGates().get(j).getX() + "," + mazeToPrint[i].getDownGates().get(j).getY());
+		}
+		
+		for(int i = 1; i < this.depth; i++){
+			if(teleporteursUp[i] != teleporteursDown[i-1]){
+				System.out.println("-----------------------");
+				System.out.println("-----------------------");
+				System.out.println("THIS SHOULD NOT HAPPENS");
+				System.out.println("-----------------------");
+				System.out.println("-----------------------");
+			}
+		}
 	}
     }
 
@@ -76,8 +93,6 @@ public class MazeTowerCuts {
 	int nbrMaxYCuts = (height / minSizeMazeHeight) - 1;
 	int nbrXCuts = ThreadLocalRandom.current().nextInt(0, nbrMaxXCuts + 1);
 	int nbrYCuts = ThreadLocalRandom.current().nextInt(0, nbrMaxYCuts + 1);
-	// int NbrXCuts = 1;
-	// int NbrYCuts = 0;
 	while (depth > nbrMaxXCuts + nbrMaxYCuts + 1) {
 	    int temp = ThreadLocalRandom.current().nextInt(0, 2);
 	    if (temp == 0)
@@ -164,23 +179,12 @@ public class MazeTowerCuts {
 	    yHeight[nbrYCuts] = this.minSizeMazeHeight + yGap + yHeight[nbrYCuts - 1];
 	}
 
-	// for(int i = 0; i < yHeight.length; i++) System.out.println("yHeight["+i+"] = "+yHeight[i]);
-
-	// On cr�er le tableau de la tour (avec les levels)
+	if(this.DEBUG == 1){
+		for(int i = 0; i < yHeight.length; i++) System.out.println("yHeight["+i+"] = "+yHeight[i]);
+	}
+	// On creer le tableau de la tour (avec les levels)
 	Tower = new MazeLevel[depth];
 	Tower[0] = new MazeLevel(nbrYCuts + 1, nbrXCuts + 1);
-
-	/*
-	 * for(int i =1; i < NbrTowerLvl; i++){ Tower[i] = new MazeLevel(NbrXCuts,NbrYCuts);
-	 */
-	/*
-	 * int XorY; XorY = ThreadLocalRandom.current().nextInt(0,1); if(XorY == 0 && ){ NbrXCutsToFill--; }else{ XorY = 1; } if(XorY == 1 && NbrXCutsToFill != 0){ NbrYCutsToFill--; }
-	 * 
-	 * if(NbrXCutsToFill == 0 && NbrYCutsToFill ==0){ break; }
-	 */
-	/*
-	 * }
-	 */
 
 	/* Every Object is allocated. We have now to fill them with maze. */
 	int xSize = 0, ySize = 0, XorY = 0, cutToLose = 0, posCutToLose = 0;
@@ -242,9 +246,9 @@ public class MazeTowerCuts {
 		    if (n < cutToLose) {
 			yHeightCutted[i][n] = yHeight[n];
 		    } else {
-			if (n > cutToLose) {
-			    yHeightCutted[i][n - 1] = yHeight[n];
-			}
+				if (n > cutToLose) {
+				    yHeightCutted[i][n - 1] = yHeight[n];
+				}
 		    }
 		}
 	    }
@@ -262,7 +266,6 @@ public class MazeTowerCuts {
 	    for (int j = 0; j < Tower[i].getMazes().length; j++) {
 		width = 0;
 		for (int k = 0; k < Tower[i].getMazes()[j].length; k++) {
-		    Maze theMaze = Tower[i].getMazes()[j][k];
 		    if (i == 0) {
 			xTemp = xWidth;
 			yTemp = yHeight;
@@ -284,12 +287,12 @@ public class MazeTowerCuts {
 		    } else {
 			if (yTemp.length > 1) {
 			    ySize = yTemp[j] - yTemp[j - 1];
-			} else { /* System.out.println("Merde"); */
+			} else {
 			    ySize = yTemp[0];
 			}
 		    }
-		    /* System.out.println("xSize : "+ xSize + " | ySize :"+ZySize); */
-		    Tower[i].getMazes()[j][k] = new Maze(xSize, ySize); // Cr�ation du premier lvl toutes les coupes
+		    if(this.DEBUG == 1) System.out.println("xSize : "+ xSize + " | ySize :"+ySize);
+		    Tower[i].getMazes()[j][k] = new Maze(xSize, ySize); // Creation du premier lvl toutes les coupes
 		    Point p = new Point(width, height);
 		    Point q = new Point(width + xSize - 1, height + ySize - 1);
 		    Node E = G.createNode(i, p, q, Tower[i].getMazes()[j][k].getDeadEnds());
@@ -299,7 +302,7 @@ public class MazeTowerCuts {
 		height += ySize;
 	    }
 	}
-
+	if(this.DEBUG == 1)
 	for (int i = 0; i < G.getNodeCount(); i++) {
 	    System.out.println("Node " + G.getNode(i).getId() + " est au niveau " + G.getNode(i).getLevel());
 	    System.out.println("       topLeft : " + G.getNode(i).getTopLeft());
@@ -355,15 +358,14 @@ public class MazeTowerCuts {
 		}
 	    }
 	}
-
-	System.out.println("-----------VERTICES---------");
-	System.out.println(G.getVerticeCount());
-	for (int i = 0; i < G.getVerticeCount(); i++) {
-	    System.out.println(G.getVertice(i).getIdNodeFrom() + " - " + G.getVertice(i).getIdNodeTo());
-	}
-
-	// Now we have to check that there is no common point going up and down in the same maze.
-	// If we find out there is one we will rand his position within the minSizeMaze
+	
+	if(this.DEBUG == 1){
+		System.out.println("-----------VERTICES---------");
+		System.out.println(G.getVerticeCount());
+		for (int i = 0; i < G.getVerticeCount(); i++) {
+		    System.out.println(G.getVertice(i).getIdNodeFrom() + " - " + G.getVertice(i).getIdNodeTo());
+		}
+    }
     }
 
     Point tpFinding(Node smallerMaze, Node biggerMaze) {
@@ -541,6 +543,7 @@ public class MazeTowerCuts {
     void pathFinding() {
 	int pred = 0;
 	int inf = Integer.MAX_VALUE;
+	int idFirstNode = 0;
 	int[] dist = new int[G.getNodeCount()];
 	ArrayList<Node> Q = new ArrayList<Node>();
 	ArrayList<Integer> Visited = new ArrayList<Integer>();
@@ -548,14 +551,16 @@ public class MazeTowerCuts {
 	    dist[i] = inf;
 	    if (G.getNode(i).getLevel() == 0) {
 		if (G.getNode(i).getTopLeft().getX() <= origin.getX() && G.getNode(i).getBotRight().getX() >= origin.getX() && G.getNode(i).getTopLeft().getY() <= origin.getY() && G.getNode(i).getBotRight().getY() >= origin.getY()) {
-		    dist[i] = 0;
+		    idFirstNode = i;
+		    pred = idFirstNode;
+			dist[i] = 0;
 		    Visited.add(i);
 		}
 	    }
 	}
 
-	for (int i = 0; i < G.getNode(0).getNextNodes().size(); i++) {
-	    Q.add(G.getNode(G.getNode(0).getNextNodes().get(i)));
+	for (int i = 0; i < G.getNode(idFirstNode).getNextNodes().size(); i++) {
+	    Q.add(G.getNode(G.getNode(idFirstNode).getNextNodes().get(i)));
 	}
 
 	while (!Q.isEmpty()) {
@@ -563,53 +568,55 @@ public class MazeTowerCuts {
 	    Node nodeToVisit = Q.get(0);
 	    Visited.add(nodeIdToVisit);
 	    for (int i = 0; i < nodeToVisit.getNextNodes().size(); i++) {
-		if (!Visited.contains(nodeToVisit.getNextNodes().get(i))) {
-		    Q.add(G.getNode(nodeToVisit.getNextNodes().get(i)));
-		}
+			if (!Visited.contains(nodeToVisit.getNextNodes().get(i))) {
+			    Q.add(G.getNode(nodeToVisit.getNextNodes().get(i)));
+			}
 	    }
 	    if (dist[nodeIdToVisit] > dist[pred] + 1)
 		dist[nodeIdToVisit] = dist[pred] + 1;
 	    pred = nodeIdToVisit;
 	    Q.remove(0);
 	}
-	System.out.print("Noeuds visit�s : {");
-	for (int i = 0; i < Visited.size(); i++) {
-	    System.out.print(" " + Visited.get(i) + " ");
+	if(this.DEBUG == 1){
+		System.out.print("Noeuds visites : {");
+		for (int i = 0; i < Visited.size(); i++) {
+		    System.out.print(" " + Visited.get(i) + " ");
+		}
+		System.out.println("}");
+		System.out.println("Distances depuis le node "+idFirstNode);
 	}
-	System.out.println("}");
-	System.out.println("Distances depuis le node 0");
-	int tempId = 0;
+	int tempId = idFirstNode;
 	int temp = 0;
 	for (int i = 0; i < dist.length; i++) {
 	    if (temp < dist[i]) {
 		temp = dist[i];
 		tempId = i;
 	    }
-	    System.out.println("Node " + i + " :" + dist[i]);
+	    if(this.DEBUG == 1) System.out.println("Node " + i + " :" + dist[i]);
 	}
 	this.endLevel = G.getNode(tempId).getLevel();
 	System.out.println("endLevel : " + endLevel + " avec comme distance : " + temp);
 	this.end.setLocation((double) ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().x, G.getNode(tempId).getBotRight().x + 1), (double) ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().y, G.getNode(tempId).getBotRight().y + 1));
-	// System.out.println("");
+	if(this.DEBUG == 1) System.out.println("");
 	if (this.depth == 1) {
 	    this.end.setLocation(Tower[0].getMazes()[0][0].getEnd());
 	}
     }
 
     void getVerticeByLevel() {
-	for (int i = 0; i < Tower.length; i++) {
-	    for (int j = 0; j < G.getNodeCountByLevel(i); j++) {
-		for (int k = 0; k < G.getNodesByLevel(i).get(j).getLinks().size(); k++) {
-		    if (G.getNodesByLevel(i).get(j).getLink(k).getIdNodeFrom() == G.getNodesByLevel(i).get(j).getId()) {
-			// C'est le node du dessus.
-			mazeToPrint[i].getDownGates().add(G.getNodesByLevel(i).get(j).getLink(k).getGate());
-		    } else {
-			// C'est le node du dessous
-			mazeToPrint[i].getUpGates().add(G.getNodesByLevel(i).get(j).getLink(k).getGate());
+		for (int i = 0; i < Tower.length; i++) {
+		    for (int j = 0; j < G.getNodeCountByLevel(i); j++) {
+				for (int k = 0; k < G.getNodesByLevel(i).get(j).getLinks().size(); k++) {
+				    if (G.getNodesByLevel(i).get(j).getLink(k).getIdNodeFrom() == G.getNodesByLevel(i).get(j).getId()) {
+						// C'est le node du dessus.
+						mazeToPrint[i].getDownGates().add(G.getNodesByLevel(i).get(j).getLink(k).getGate());
+				    } else {
+				    	// C'est le node du dessous
+				    	mazeToPrint[i].getUpGates().add(G.getNodesByLevel(i).get(j).getLink(k).getGate());
+				    }
+				}
 		    }
 		}
-	    }
-	}
     }
 
     public String toString() {
