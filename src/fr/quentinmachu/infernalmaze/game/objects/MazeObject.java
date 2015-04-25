@@ -60,14 +60,14 @@ public class MazeObject implements GameObject {
 	initial_rotation = new Vector3f(0, 0, 0);
 	position = new Vector3f(initial_position.x, initial_position.y, initial_position.z);
 	rotation = new Vector3f(initial_rotation.x, initial_rotation.y, initial_rotation.z);
-
+	
 	// Initialize floor rendering
-	floorTexture = Texture.loadTexture("resources/floor.png");
+	floorTexture = Texture.loadTexture("/textures/floor.png");
 	floorMaterial = new Material(new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.33f, 0.33f, 0.33f), 0.75f);
 	floorRenderer = new Renderer(gameState.getCamera(), floorTexture, floorMaterial, gameState.getAmbientLight());
 
 	// Initialize wall rendering
-	wallTexture = Texture.loadTexture("resources/wall.jpg");
+	wallTexture = Texture.loadTexture("/textures/wall.jpg");
 	wallMaterial = new Material(new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.33f, 0.33f, 0.33f), 0.75f);
 	wallRenderer = new Renderer(gameState.getCamera(), wallTexture, wallMaterial, gameState.getAmbientLight());
     }

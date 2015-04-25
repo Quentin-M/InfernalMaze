@@ -117,11 +117,11 @@ public class Renderer {
 
 	/* Load shaders */
 	if (!useCubeMap) {
-	    vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "resources/default_vertex.glsl");
-	    fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "resources/default_fragment.glsl");
+	    vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "/shaders/default_vertex.glsl");
+	    fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "/shaders/default_fragment.glsl");
 	} else {
-	    vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "resources/cubemap_vertex.glsl");
-	    fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "resources/cubemap_fragment.glsl");
+	    vertexShader = Shader.loadShader(GL_VERTEX_SHADER, "/shaders/cubemap_vertex.glsl");
+	    fragmentShader = Shader.loadShader(GL_FRAGMENT_SHADER, "/shaders/cubemap_fragment.glsl");
 	}
 
 	/* Create shader program */

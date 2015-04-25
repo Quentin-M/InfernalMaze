@@ -42,7 +42,7 @@ public class BallObject implements GameObject {
     public BallObject(MazeGame gameState) {
 	this.gameState = gameState;
 
-	texture = Texture.loadTexture("resources/earth.png", true);
+	texture = Texture.loadTexture("/textures/earth.png", true);
 	material = new Material(new Vector3f(0.2f, 0.2f, 0.2f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(2.0f, 2.0f, 2.0f), 5f);
 	renderer = new Renderer(gameState.getCamera(), texture, material, gameState.getAmbientLight(), true);
 	renderer.setPrimitive(GL11.GL_TRIANGLE_STRIP);

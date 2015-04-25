@@ -25,7 +25,6 @@
 package fr.quentinmachu.infernalmaze.ui;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -98,8 +97,7 @@ public class Shader {
      */
     public static Shader loadShader(int type, String path) {
 	StringBuilder builder = new StringBuilder();
-
-	try (InputStream in = new FileInputStream(path); BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+	try (InputStream in = Shader.class.getResourceAsStream(path); BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
 	    String line;
 	    while ((line = reader.readLine()) != null) {
 		builder.append(line).append("\n");

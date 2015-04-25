@@ -26,7 +26,6 @@ package fr.quentinmachu.infernalmaze.ui;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -186,9 +185,9 @@ public class Texture {
     public static Texture loadTexture(String path, boolean isCubeMap) {
 	BufferedImage image = null;
 	try {
-	    InputStream in = new FileInputStream(path);
+	    InputStream in = Texture.class.getResourceAsStream(path);
 	    image = ImageIO.read(in);
-	} catch (IOException ex) {
+	} catch (IOException|IllegalArgumentException ex) {
 	    throw new RuntimeException("Failed to load a texture file!" + System.lineSeparator() + ex.getMessage());
 	}
 	if (image != null) {
