@@ -1,9 +1,5 @@
 package fr.quentinmachu.infernalmaze.game.controllers;
 
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
-import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
@@ -20,9 +16,6 @@ public class SpaceNavigatorController extends InputController {
 
     @Override
     public void init() {
-	// Hide mouse
-	glfwSetInputMode(game.getWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
 	ControllerEnvironment controllerEnvironment = ControllerEnvironment.getDefaultEnvironment();
 	Controller[] controllers = controllerEnvironment.getControllers();
 	for (Controller controller : controllers) {
@@ -35,9 +28,6 @@ public class SpaceNavigatorController extends InputController {
 	if (spaceNavigator == null) {
 	    throw new RuntimeException("Could not find any Space Navigator controller.");
 	}
-
-	// Disable mouse
-	glfwSetInputMode(game.getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
     @Override
@@ -45,7 +35,6 @@ public class SpaceNavigatorController extends InputController {
 	if (spaceNavigator.poll()) {
 	    for (Component component : components) {
 		switch (component.getName()) {
-
 		case "Axe X":
 		case "x":
 		    setX((float) (component.getPollData() * MAX_MOVEMENT / 0.26));
