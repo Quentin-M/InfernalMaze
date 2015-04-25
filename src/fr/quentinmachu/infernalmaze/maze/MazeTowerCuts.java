@@ -595,7 +595,6 @@ public class MazeTowerCuts {
 	    if(this.DEBUG == 1) System.out.println("Node " + i + " :" + dist[i]);
 	}
 	this.endLevel = G.getNode(tempId).getLevel();
-	System.out.println("endLevel : " + endLevel + " avec comme distance : " + temp);
 	this.end.setLocation((double) ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().x, G.getNode(tempId).getBotRight().x + 1), (double) ThreadLocalRandom.current().nextInt(G.getNode(tempId).getTopLeft().y, G.getNode(tempId).getBotRight().y + 1));
 	if(this.DEBUG == 1) System.out.println("");
 	if (this.depth == 1) {
